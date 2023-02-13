@@ -1,0 +1,44 @@
+.test {
+  background-color: blueviolet;
+}
+.login_container_wrapper {
+  width: 52%;
+  height: 64%;
+}
+.login_headline_wrapper {
+  margin-top: 10%;
+  margin-left: 10%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 45px;
+}
+.login_headline2_wrapper {
+  /* width: 264px; */
+  margin-top: 7.5%;
+  /* margin-left: 30%; */
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 30px;
+}
+
+.login_notregisteredyet {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+.login_signup {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  /* identical to box height */
+
+  text-decoration-line: underline;
+}
