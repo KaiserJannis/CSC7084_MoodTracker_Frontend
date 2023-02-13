@@ -14,10 +14,11 @@
           event.preventDefault();
           event.stopPropagation();
         }
-
         form.classList.add("was-validated");
+        console.log(event);
       },
       false
     );
+    console.log(form.classList);
   });
 })();
