@@ -12,6 +12,10 @@
 .signup_container_wrapper {
   width: 55%;
   height: 75%;
+
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+  }
 }
 .login_headline_wrapper,
 .signup_headline_wrapper {
