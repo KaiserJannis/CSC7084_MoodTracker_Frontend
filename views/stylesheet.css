@@ -1,15 +1,6 @@
-.custom_button_text {
-  font-family: "Poppins";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 25px;
-  /* line-height: 48px; */
-  /* identical to box height */
-
-  text-align: center;
-}
 .login_container_wrapper,
-.signup_container_wrapper {
+.signup_container_wrapper,
+.custom_modal_wrapper {
   width: 55%;
   height: 75%;
 }
@@ -88,4 +79,11 @@
   /* identical to box height */
 
   text-decoration-line: underline;
+}
+.custom_button_text {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  text-align: center;
 }

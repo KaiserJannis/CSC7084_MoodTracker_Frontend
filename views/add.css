@@ -1,0 +1,51 @@
+.custom_site_wrapper {
+  padding-top: 56px !important;
+}
+.custom_modal_wrapper {
+  width: 55%;
+  height: 85%;
+  background-color: aquamarine;
+}
+.custom_modal_form_wrapper,
+.signup_form_wrapper,
+.login_form_wrapper {
+  width: 60%;
+  min-width: 230px;
+  max-width: 500px;
+}
+.custom_modal_headline_wrapper,
+.signup_headline_wrapper {
+  margin-top: 10%;
+  margin-left: 10%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 45px;
+}
+.custom_modal_headline2_wrapper,
+.signup_headline2_wrapper {
+  /* width: 264px; */
+  margin-top: 7.5%;
+  /* margin-left: 30%; */
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 30px;
+}
+.custom_button_modal,
+.custom_button_text {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 22px;
+  text-align: center;
+}
+.custom_modal_input_label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}

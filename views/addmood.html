@@ -20,7 +20,14 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
+    <link href="./add.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins"
+      rel="stylesheet"
+    />
+    <!-- <link href="./stylesheet.css" ref="stylesheet" /> -->
     <!-- import other html files and components -->
+
     <script>
       $(function () {
         $("#header").load("../features/header.html");
@@ -29,6 +36,149 @@
     <title>Add mood</title>
   </head>
   <body>
-    <div id="header"></div>
+    <div class="site_wrapper vw-100 vh-100">
+      <div id="header"></div>
+      <div
+        class="custom_site_wrapper w-100 h-100 d-flex align-items-center justify-content-center"
+      >
+        <div
+          class="custom_modal_wrapper mh-100 container overflow-y-auto d-flex flex-column rounded-5"
+        >
+          <div class="d-flex custom_modal_headline_wrapper">
+            <span id="signup_title"></span>
+          </div>
+          <div
+            class="custom_modal_form_container_wrapper d-flex flex-column w-100 mt-3 align-items-center"
+          >
+            <div class="container custom_modal_form_wrapper">
+              <div
+                class="d-flex mb-3 custom_modal_headline2_wrapper"
+                id="signup_headline2"
+              ></div>
+              <form class="needs-validation" novalidate>
+                <div class="mb-3 custom_modal_input_wrapper">
+                  <label
+                    for="custom_modal_input_1"
+                    class="custom_modal_input_label form-label"
+                    >Activeness (0-10)</label
+                  >
+                  <input
+                    type="range"
+                    class="custom_modal_input form-control"
+                    id="custom_modal_input_1"
+                    value=""
+                    min="0"
+                    max="10"
+                    required
+                  />
+                  <div class="d-flex flex-row justify-content-between w-100">
+                    <span class="custom_modal_input_label">very active</span>
+                    <span class="custom_modal_input_label"
+                      >not active at all</span
+                    >
+                  </div>
+                </div>
+                <div class="mb-3 custom_modal_input_wrapper">
+                  <label
+                    for="custom_modal_input_2"
+                    class="form-label custom_modal_input_label"
+                    >Pleasantness (0-10)</label
+                  >
+                  <input
+                    type="range"
+                    class="custom_modal_input form-control"
+                    id="custom_modal_input_2"
+                    value=""
+                    min="0"
+                    max="10"
+                    required
+                  />
+                  <div class="d-flex flex-row justify-content-between w-100">
+                    <span class="custom_modal_input_label">very pleasant</span>
+                    <span class="custom_modal_input_label"
+                      >not pleasant at all</span
+                    >
+                  </div>
+                </div>
+                <div class="mb-3 custom_modal_input_wrapper">
+                  <label
+                    for="custom_modal_input_3"
+                    class="custom_modal_input_label form-label"
+                    >Mood trigger</label
+                  >
+                  <textarea
+                    class="custom_modal_input form-control"
+                    id="custom_modal_input_3"
+                    placeholder="What triggered your mood?"
+                    value=""
+                  ></textarea>
+                </div>
+                <div
+                  class="d-flex p-0 mt-5 mb-5 justify-content-center signup_submit_wrapper"
+                >
+                  <button
+                    class="custom_button_modal me-3 btn pt-0 pb-0 ps-4 pe-4 btn-primary"
+                    type="submit"
+                    id="custom_modal_button_submit"
+                  ></button>
+
+                  <button
+                    class="custom_button_modal btn pt-0 pb-0 ps-4 pe-4 btn-primary"
+                    type="reset"
+                    id="custom_modal_button_cancel"
+                  ></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var title = "Log your mood";
+      var headline2 = "How are you feeling today?";
+      var button_submit = "Save";
+      var button_cancel = "Cancel";
+      var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
+      var icon_white = "<img src='../assets/low_vision.svg'/> ";
+
+      document.getElementById("signup_title").innerHTML = title;
+      document.getElementById("signup_headline2").innerHTML = headline2;
+      document.getElementById("custom_modal_button_submit").innerHTML =
+        button_submit;
+      document.getElementById("custom_modal_button_cancel").innerHTML =
+        button_cancel;
+      document.getElementById("password_visible_icon").innerHTML = icon_black;
+
+      document
+        .getElementById("signup_button")
+        .addEventListener("click", myfunc);
+      function myfunc(params) {
+        console.log("check validation first and then submit data");
+      }
+
+      document
+        .getElementById("password_visible_icon")
+        .addEventListener("click", password_visibility);
+      function password_visibility() {
+        var x = document.getElementById("signup_password_input");
+        console.log("1: " + x.type);
+        if (x.type === "password") {
+          x.type = "text";
+        } else {
+          x.type = "password";
+        }
+        console.log("2: " + x.type);
+        var icon_visibility = document.getElementById("password_visible_icon");
+        if (!icon_visibility.classList.contains(".active")) {
+          icon_visibility.classList.add(".active");
+          icon_visibility.innerHTML = icon_white;
+        } else {
+          icon_visibility.classList.remove(".active");
+          icon_visibility.innerHTML = icon_black;
+        }
+        console.log("but: " + icon_visibility.classList);
+      }
+    </script>
   </body>
 </html>
