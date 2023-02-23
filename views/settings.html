@@ -20,18 +20,186 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
-    <link href="./stylesheet.css" rel="stylesheet" ></link>
+    <link href="./add.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins"
+      rel="stylesheet"
+    />
+    <!-- <link href="./stylesheet.css" ref="stylesheet" /> -->
     <!-- import other html files and components -->
+
     <script>
       $(function () {
         $("#header").load("../features/header.html");
       });
     </script>
-    
-    <title>Mood_Tracker</title>
+    <title>Settings</title>
   </head>
   <body>
-    <div id="header"></div>
-    <div class="nav_header active">active</div>
+    <div class="site_wrapper vw-100 vh-100">
+      <div id="header"></div>
+      <div
+        class="custom_site_wrapper w-100 h-100 d-flex align-items-center justify-content-center"
+      >
+        <div
+          class="custom_modal_wrapper mh-100 container overflow-y-auto d-flex flex-column rounded-5"
+        >
+          <div class="d-flex mt-5 custom_modal_headline_wrapper">
+            <span id="signup_title"></span>
+          </div>
+          <div
+            class="custom_modal_form_container_wrapper d-flex flex-column w-100 mt-3 align-items-center"
+          >
+            <div class="container custom_modal_form_wrapper">
+              <div
+                class="d-flex mb-3 custom_modal_headline2_wrapper"
+                id="signup_headline2"
+              ></div>
+              <div class="custom_modal_input_wrapper">
+                <table class="table table-hover">
+                  <tbody>
+                    <tr>
+                      <td>Username:</td>
+                      <td>
+                        <input
+                          id="input_settings_username"
+                          value="loaded username"
+                          type="text"
+                          disabled
+                        />
+                      </td>
+                      <td>
+                        <button
+                          id="button_settings_username"
+                          value="input_settings_username"
+                          type="button"
+                        >
+                          Edit now
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Password:</td>
+                      <td>
+                        <input
+                          id="input_settings_password"
+                          value="loaded password"
+                          type="password"
+                          disabled
+                        />
+                      </td>
+                      <td>
+                        <button
+                          id="button_settings_password"
+                          value="input_settings_password"
+                          type="button"
+                        >
+                          Edit now
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Delete all entries:</td>
+                      <td>
+                        <span id="output_settings_entries_count"></span> entries
+                        stored
+                      </td>
+                      <td>
+                        <button
+                          id="button_settings_entries_count"
+                          type="button"
+                          value="output_settings_entries_count"
+                        >
+                          Delete all entries now
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td id="output_settings_delete_account" colspan="2">
+                        Delete your account
+                      </td>
+                      <td>
+                        <button
+                          id="button_settings_delete_account"
+                          type="button"
+                          value="output_settings_delete_account"
+                        >
+                          Delete account now
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // on Site load get Username, password, entry count
+    </script>
+    <script>
+      var title = "Manage your account settings";
+      var headline2 = "What do you want to change?";
+      var entry_count = 123;
+
+      document.getElementById("signup_title").innerHTML = title;
+      document.getElementById("signup_headline2").innerHTML = headline2;
+
+      document
+        .getElementById("button_settings_password")
+        .addEventListener("click", settingUsernamePasswordFunc);
+      document
+        .getElementById("button_settings_username")
+        .addEventListener("click", settingUsernamePasswordFunc);
+      document
+        .getElementById("button_settings_entries_count")
+        .addEventListener("click", deleteEntries);
+      document
+        .getElementById("button_settings_delete_account")
+        .addEventListener("click", deleteAccount);
+
+      function deleteEntries(elem) {
+        var output_x = document.getElementById(elem.target.value);
+        console.log(output_x);
+        console.log("delete all entries now");
+        //TODO - call delete entries backend call here
+        //TODO - entries_count = call load number of entries here for validation
+        // output_x.innerHTML=entries_count
+      }
+      function deleteAccount(elem) {
+        var output_x = document.getElementById(elem.target.value);
+        console.log(output_x);
+        console.log("delete account now");
+        //TODO - backend call delete account here
+        //TODO - delete successfull change background color green
+      }
+      function settingUsernamePasswordFunc(elem) {
+        var input_x = document.getElementById(elem.target.value);
+        var button_x = elem.target;
+
+        // console.log("input value: " + input_x.value);
+        if (input_x.disabled === true) {
+          if (input_x.id.includes("password")) {
+            // console.log("includes password");
+            input_x.type = "text";
+          }
+          button_x.innerHTML = "Save now";
+          console.log("changed to enabled");
+          input_x.disabled = false;
+        } else {
+          //TODO - backend call update here for change of username/password
+          if (input_x.id.includes("password")) {
+            // console.log("includes password");
+            input_x.type = "password";
+          }
+          button_x.innerHTML = "Edit now";
+          // console.log("input val to be: " + input_x.value);
+          console.log("changed to disabled");
+          input_x.disabled = true;
+        }
+      }
+    </script>
   </body>
 </html>

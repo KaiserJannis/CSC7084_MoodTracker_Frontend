@@ -9,9 +9,9 @@
 .custom_modal_form_wrapper,
 .signup_form_wrapper,
 .login_form_wrapper {
-  width: 60%;
+  width: 80%;
   min-width: 230px;
-  max-width: 500px;
+  /* max-width: 500px; */
 }
 .custom_modal_headline_wrapper,
 .signup_headline_wrapper {
@@ -43,6 +43,13 @@
   text-align: center;
 }
 .custom_modal_input_label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}
+.font_normal_custom_modal {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 400;
