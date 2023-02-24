@@ -20,18 +20,147 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
-    <link href="./stylesheet.css" rel="stylesheet" ></link>
+    <!-- <link href="./stylesheet.css" rel="stylesheet" ></link> -->
+    <link href="./add.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins"
+      rel="stylesheet"
+    />
     <!-- import other html files and components -->
     <script>
       $(function () {
         $("#header").load("../features/header.html");
       });
     </script>
-    
-    <title>Mood_Tracker</title>
+
+    <title>Dashboard</title>
   </head>
   <body>
-    <div id="header"></div>
-    <div class="nav_header active">active</div>
+    <div class="site_wrapper vw-100 vh-100">
+      <div id="header" style="position: fixed; z-index: 100"></div>
+      <div
+        class="custom_site_wrapper w-100 h-100 d-flex flex-row align-items-center justify-content-center overflow-y-auto"
+        style="
+          position: fixed;
+          height: calc(100vh-56px);
+          margin-bottom: 56px !important;
+        "
+      >
+        <div
+          class="custom_modal_wrapper bg-transparent p-0 w-100 mh-100 container d-flex flex-column overflow-visible"
+        >
+          <div
+            class="custom_chartjs_wrapper container d-flex justify-content-center p-0 m-0"
+          >
+            chartjs
+          </div>
+          <div
+            id="custom_log_entry_container"
+            class="custom_logs_wrapper w-100 mt-4 mb-4 d-flex align-items-center flex-column container p-0 m-0"
+          ></div>
+        </div>
+      </div>
+    </div>
+    <script src="data.js"></script>
+
+    <script>
+      var mood_logs = document.getElementById("custom_log_entry_container");
+      for (const mood in myData) {
+        if (Object.hasOwnProperty.call(myData, mood)) {
+          const date = myData[mood].date;
+          const time = myData[mood].time;
+          const active = myData[mood].active;
+          const pleasant = myData[mood].pleasant;
+          var trigger = myData[mood].trigger.toString();
+          // trigger = JSON.stringify(trigger);
+          const id = myData[mood].id;
+          // console.log(date, time, active, pleasant, trigger);
+          console.log(trigger);
+
+          const childElem = document.createElement("div");
+          // childElem.textContent = `Date: ${date}, Time: ${time}`;
+          childElem.id = `dashboard_log_${mood}`;
+          childElem.classList.add("custom_dashboard_mood_logs");
+          mood_logs.innerHTML += `<div
+              class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
+              style="height: 50px"
+            >
+              <span class="d-flex w-100"
+                ><span
+                  class="dashboard_fonts_log_label me-4"
+                  style="width: 13%"//130px
+                  >Date:
+                  <span class="dashboard_fonts_log_value">${date}</span>
+                </span>
+                <span
+                  class="dashboard_fonts_log_label me-4"
+                  style="width: 9%"
+                  >Time: <span class="dashboard_fonts_log_value">${time}</span>
+                </span>
+                <span class="dashboard_fonts_log_label me-4"
+                style="width:24%"
+                  >Mood:
+                  <span class="dashboard_fonts_log_value">active: ${active}</span> &
+                  <span class="dashboard_fonts_log_value"
+                    >pleasant: ${pleasant}</span
+                  ></span
+                >
+                <div class="dashboard_fonts_log_label d-flex"
+                style="width:54%">
+                  Trigger:
+                  <input
+                    id='dashboard_input_trigger_${id}'
+                    type="text"
+                    class="dashboard_fonts_log_value ps-1 d-flex overflow-hidden"
+                    style="
+                      max-width: 500px !important;
+                      width: 500px;
+                    "
+                    value='${trigger}'
+                    disabled
+                    > 
+                    
+                </div>
+              </span>
+              <span
+                class="w-100 d-flex justify-content-end"
+                style="max-width: 200px"
+                ><button id='dashboard_edit_button_${id}' value='${id}' class="dashboard_button_log_edit btn btn-light me-2">Edit</button>
+                <button id='dashboard_delete_button_${id}' value='${id}' class="dashboard_button_log_delete btn btn-light">Delete</button></span
+              >
+            </div>`;
+        }
+      }
+    </script>
+    <script>
+      const edit_buttons = document.querySelectorAll(
+        ".dashboard_button_log_edit"
+      );
+      const delete_buttons = document.querySelectorAll(
+        ".dashboard_button_log_delete"
+      );
+      edit_buttons.forEach((edit_butt) => {
+        edit_butt.addEventListener("click", dashboardButtonsFunc);
+      });
+      delete_buttons.forEach((delete_butt) => {
+        delete_butt.addEventListener("click", dashboardButtonsFunc);
+      });
+      function dashboardButtonsFunc(elem) {
+        console.log("edit buttons is clicked");
+        console.log("button id: " + elem.target.id);
+        //value contains the mood log id
+        // dashboard_input_trigger_ for id of connected input field
+        console.log("button value/mood log id: " + elem.target.value);
+        if (elem.target.id.includes("edit")) {
+          console.log("edit button");
+          //TODO - edit callback here
+        } else if (elem.target.id.includes("delete")) {
+          console.log("delete button");
+          //TODO - delete callback here
+        } else {
+          console.log("something went wrong, button is not defined");
+        }
+      }
+    </script>
   </body>
 </html>

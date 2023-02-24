@@ -4,7 +4,7 @@
 .custom_modal_wrapper {
   width: 55%;
   height: 85%;
-  background-color: aquamarine;
+  background-color: #0d6efd;
 }
 .custom_modal_form_wrapper,
 .signup_form_wrapper,
@@ -55,4 +55,21 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
+}
+.dashboard_fonts_log_label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+}
+.dashboard_fonts_log_value {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+#custom_log_entry_container > div:last-child {
+  margin-bottom: 20px;
 }
