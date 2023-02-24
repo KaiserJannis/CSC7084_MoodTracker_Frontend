@@ -68,7 +68,7 @@ var myData = {
     time: "21:00",
     active: 8, //0-10
     pleasant: 9, //0-10
-    trigger: "fireworks on independence day",
+    trigger: "fireworks on independence sdacwecewacwecevewvrwevewvewday",
     id: 9,
   },
   mood10: {

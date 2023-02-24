@@ -85,37 +85,34 @@
               class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
               style="height: 50px"
             >
-              <span class="d-flex w-100"
+              <span class="d-flex w-100 justify-content-center"
                 ><span
-                  class="dashboard_fonts_log_label me-4"
-                  style="width: 13%"//130px
+                  class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                  style="width: 14%"//130px
                   >Date:
-                  <span class="dashboard_fonts_log_value">${date}</span>
+                  <span class="dashboard_fonts_log_value ms-1">${date}</span>
                 </span>
                 <span
-                  class="dashboard_fonts_log_label me-4"
-                  style="width: 9%"
-                  >Time: <span class="dashboard_fonts_log_value">${time}</span>
+                  class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                  style="width: 10%"
+                  >Time: <span class="dashboard_fonts_log_value ms-1">${time}</span>
                 </span>
-                <span class="dashboard_fonts_log_label me-4"
-                style="width:24%"
+                <span class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                style="width:26%"
                   >Mood:
-                  <span class="dashboard_fonts_log_value">active: ${active}</span> &
-                  <span class="dashboard_fonts_log_value"
+                  <span class="dashboard_fonts_log_value ms-1 me-1">active: ${active}</span> &
+                  <span class="dashboard_fonts_log_value ms-1"
                     >pleasant: ${pleasant}</span
                   ></span
                 >
-                <div class="dashboard_fonts_log_label d-flex"
-                style="width:54%">
+                <div class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                style="width:45%">
                   Trigger:
                   <input
                     id='dashboard_input_trigger_${id}'
                     type="text"
-                    class="dashboard_fonts_log_value ps-1 d-flex overflow-hidden"
-                    style="
-                      max-width: 500px !important;
-                      width: 500px;
-                    "
+                    class="dashboard_fonts_log_value ms-1 ps-1 d-flex overflow-hidden form-control"
+                    style="width:100%"
                     value='${trigger}'
                     disabled
                     > 
@@ -123,7 +120,7 @@
                 </div>
               </span>
               <span
-                class="w-100 d-flex justify-content-end"
+                class=" d-flex justify-content-end"
                 style="max-width: 200px"
                 ><button id='dashboard_edit_button_${id}' value='${id}' class="dashboard_button_log_edit btn btn-light me-2">Edit</button>
                 <button id='dashboard_delete_button_${id}' value='${id}' class="dashboard_button_log_delete btn btn-light">Delete</button></span
@@ -153,6 +150,18 @@
         console.log("button value/mood log id: " + elem.target.value);
         if (elem.target.id.includes("edit")) {
           console.log("edit button");
+          var input_field_id = "dashboard_input_trigger_" + elem.target.value;
+          var edit_button = elem.target;
+          input_field = document.getElementById(input_field_id);
+          // console.log(input_field);
+          if (input_field.disabled === true) {
+            input_field.disabled = false;
+            edit_button.innerHTML = "Save";
+            edit_button.id = "dashboard_save_button_" + elem.target.value;
+            //TODO - get delete button and change to cancel button
+            console.log("changed to enabled");
+          } else {
+          }
           //TODO - edit callback here
         } else if (elem.target.id.includes("delete")) {
           console.log("delete button");
