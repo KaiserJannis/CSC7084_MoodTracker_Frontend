@@ -20,6 +20,8 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- <link href="./stylesheet.css" rel="stylesheet" ></link> -->
     <link href="./add.css" rel="stylesheet" />
     <link
@@ -50,9 +52,9 @@
           class="custom_modal_wrapper bg-transparent p-0 w-100 mh-100 container d-flex flex-column overflow-visible"
         >
           <div
-            class="custom_chartjs_wrapper container d-flex justify-content-center p-0 m-0"
+            class="custom_chartjs_wrapper w-100 d-flex justify-content-center p-0 m-0"
           >
-            chartjs
+            <canvas id="active_pleasant_chart"></canvas>
           </div>
           <div
             id="custom_log_entry_container"
@@ -62,12 +64,111 @@
       </div>
     </div>
     <script src="data.js"></script>
+    <script src="data_chart.js"></script>
+    <script>
+      dashboard_chart(random_test_data, "active_pleasant_chart");
+      function dashboard_chart(chart_data, canvas_chart_id) {
+        if (!chart_data) {
+          console.log("no chart data defined");
+        }
+        //resize canvas
+        resize_canvas(canvas_chart_id);
 
+        let dates = [];
+        let active_values = [];
+        let pleasant_values = [];
+
+        chart_data.forEach((day) => {
+          let day_dates = [];
+          let day_active_values = [];
+          let day_pleasant_values = [];
+
+          day.dataPoints.forEach((data_point) => {
+            day_dates.push(`${day.date} ${data_point.time}`);
+            day_active_values.push(data_point.active);
+            day_pleasant_values.push(data_point.pleasant);
+          });
+
+          dates.push(day_dates);
+          active_values.push(day_active_values);
+          pleasant_values.push(day_pleasant_values);
+        });
+
+        let ctx = document
+          .getElementById(canvas_chart_id.toString())
+          .getContext("2d");
+
+        let chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: dates.flat(),
+            datasets: [
+              {
+                label: "Active",
+                data: active_values.flat(),
+                borderColor: "red",
+                fill: false,
+              },
+              {
+                label: "Pleasant",
+                data: pleasant_values.flat(),
+                borderColor: "blue",
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              xAxes: [
+                {
+                  type: "time",
+                  time: {
+                    parser: "DD.MM.YYYY HH:mm",
+                    tooltipFormat: "lll",
+                  },
+                  scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                  },
+                },
+              ],
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                    max: 10,
+                  },
+                  scaleLabel: {
+                    display: true,
+                    labelString: "Value",
+                  },
+                },
+              ],
+            },
+          },
+        });
+        // console.log(chart);
+        window.addEventListener("resize", () => {
+          let canvas = document.getElementById(canvas_chart_id);
+          canvas.width = canvas.parentElement.clientWidth;
+          canvas.height = canvas.parentElement.clientHeight;
+          chart.resize();
+          chart.update();
+        });
+      }
+    </script>
     <script>
       //TODO - get database data callback here
       render_mood_log_entries(myData);
       function render_mood_log_entries(mood_data) {
-        var mood_logs = document.getElementById("custom_log_entry_container");
+        if (mood_data === undefined) {
+          console.log("mood data is undefined. Looks like this:");
+          console.log(mood_data);
+          console.log("end error message");
+        }
+        var mood_logs_container = document.getElementById(
+          "custom_log_entry_container"
+        );
         for (const mood in mood_data) {
           if (Object.hasOwnProperty.call(mood_data, mood)) {
             const date = mood_data[mood].date;
@@ -84,56 +185,56 @@
             // childElem.textContent = `Date: ${date}, Time: ${time}`;
             childElem.id = `dashboard_log_${mood}`;
             childElem.classList.add("custom_dashboard_mood_logs");
-            mood_logs.innerHTML += `<div
-              class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
-              style="height: 50px"
-            >
-              <span class="d-flex w-100 justify-content-center"
-                ><span
-                  class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
-                  style="width: 14%"//130px
-                  >Date:
-                  <span class="dashboard_fonts_log_value ms-1">${date}</span>
-                </span>
-                <span
-                  class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
-                  style="width: 10%"
-                  >Time: <span class="dashboard_fonts_log_value ms-1">${time}</span>
-                </span>
-                <span class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
-                style="width:26%"
-                  >Mood:
-                  <span class="dashboard_fonts_log_value ms-1 me-1">active: ${active}</span> &
-                  <span class="dashboard_fonts_log_value ms-1"
-                    >pleasant: ${pleasant}</span
-                  ></span
-                >
-                <div class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
-                style="width:45%">
-                  Trigger:
-                  <input
-                    id='dashboard_input_trigger_${id}'
-                    type="text"
-                    class="dashboard_fonts_log_value ms-1 ps-1 d-flex overflow-hidden form-control"
-                    style="width:100%"
-                    value='${trigger}'
-                    disabled
-                    > 
-                    
-                </div>
-              </span>
-              <span
-                class=" d-flex justify-content-end"
-                style="max-width: 200px"
-                ><button id='dashboard_edit_button_${id}' value='${id}' class="dashboard_button_log_edit btn btn-light me-2">Edit</button>
-                <button id='dashboard_delete_button_${id}' value='${id}' class="dashboard_button_log_delete btn btn-light">Delete</button></span
-              >
-            </div>`;
+            mood_logs_container.innerHTML += `<div
+                    class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
+                    style="height: 50px"
+                  >
+                    <span class="d-flex w-100 justify-content-center"
+                      ><span
+                        class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                        style="width: 14%"//130px
+                        >Date:
+                        <span class="dashboard_fonts_log_value ms-1">${date}</span>
+                      </span>
+                      <span
+                        class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                        style="width: 10%"
+                        >Time: <span class="dashboard_fonts_log_value ms-1">${time}</span>
+                      </span>
+                      <span class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                      style="width:26%"
+                        >Mood:
+                        <span class="dashboard_fonts_log_value ms-1 me-1">active: ${active}</span> &
+                        <span class="dashboard_fonts_log_value ms-1"
+                          >pleasant: ${pleasant}</span
+                        ></span
+                      >
+                      <div class="dashboard_fonts_log_label me-4 d-flex flex-row align-items-center"
+                      style="width:45%">
+                        Trigger:
+                        <input
+                          id='dashboard_input_trigger_${id}'
+                          type="text"
+                          class="dashboard_fonts_log_value ms-1 ps-1 d-flex overflow-hidden form-control"
+                          style="width:100%"
+                          value='${trigger}'
+                          disabled
+                          >
+
+                      </div>
+                    </span>
+                    <span
+                      class=" d-flex justify-content-end"
+                      style="max-width: 200px"
+                      ><button id='dashboard_edit_button_${id}' value='${id}' class="dashboard_button_log_edit btn btn-light me-2">Edit</button>
+                      <button id='dashboard_delete_button_${id}' value='${id}' class="dashboard_button_log_delete btn btn-light">Delete</button></span
+                    >
+                  </div>`;
           }
         }
-        add_eventlistener_mood_entries();
+        add_eventlistener_mood_entries(mood_data);
       }
-      function add_eventlistener_mood_entries() {
+      function add_eventlistener_mood_entries(mood_data) {
         const edit_buttons = document.querySelectorAll(
           ".dashboard_button_log_edit"
         );
@@ -141,22 +242,26 @@
           ".dashboard_button_log_delete"
         );
         edit_buttons.forEach((button) => {
-          button.addEventListener("click", dashboardButtonsFunc);
+          button.addEventListener("click", () => {
+            dashboardButtonsFunc(button, mood_data);
+          });
         });
         delete_buttons.forEach((button) => {
-          button.addEventListener("click", dashboardButtonsFunc);
+          button.addEventListener("click", () => {
+            dashboardButtonsFunc(button, mood_data);
+          });
         });
       }
-      function dashboardButtonsFunc(elem) {
-        const row_id = elem.target.value;
+      function dashboardButtonsFunc(elem, mood_data) {
+        const row_id = elem.value;
         mood_data = myData; //object with actual data from backend
-        console.log("button clicked id: " + elem.target.id);
+        console.log("button clicked id: " + elem.id);
         //value contains the mood log id
-        if (elem.target.id.includes("edit")) {
+        if (elem.id.includes("edit")) {
           console.log("edit button clicked start");
           //get connected input field and delete button
           var input_field_id = "dashboard_input_trigger_" + row_id;
-          var edit_button = elem.target;
+          var edit_button = elem;
           var delete_button = document.getElementById(
             "dashboard_delete_button_" + row_id
           );
@@ -178,10 +283,10 @@
             );
           }
           console.log("edit button clicked end");
-        } else if (elem.target.id.includes("save")) {
+        } else if (elem.id.includes("save")) {
           console.log("save button clicked start");
           //get connected input field and delete button
-          var save_button = elem.target;
+          var save_button = elem;
           var cancel_button = document.getElementById(
             "dashboard_cancel_button_" + row_id
           );
@@ -213,10 +318,10 @@
             );
           }
           console.log("save button clicked end");
-        } else if (elem.target.id.includes("delete")) {
+        } else if (elem.id.includes("delete")) {
           console.log("delete button clicked start");
           //delete mood log entry
-          var delete_button = elem.target;
+          var delete_button = elem;
           //TODO - backend call delete mood log entry here
           let backend_successfull = delete mood_data[row_id];
           // let backend_successfull = true;
@@ -230,11 +335,11 @@
           }
           render_mood_log_entries(mood_data);
           console.log("delete button clicked end");
-        } else if (elem.target.id.includes("cancel")) {
+        } else if (elem.id.includes("cancel")) {
           console.log("cancel button clicked start");
           //nothing changed
           //get connected input field and edit button
-          var cancel_button = elem.target;
+          var cancel_button = elem;
           var save_button = document.getElementById(
             "dashboard_save_button_" + row_id
           );
