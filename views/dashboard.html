@@ -64,24 +64,27 @@
     <script src="data.js"></script>
 
     <script>
-      var mood_logs = document.getElementById("custom_log_entry_container");
-      for (const mood in myData) {
-        if (Object.hasOwnProperty.call(myData, mood)) {
-          const date = myData[mood].date;
-          const time = myData[mood].time;
-          const active = myData[mood].active;
-          const pleasant = myData[mood].pleasant;
-          var trigger = myData[mood].trigger.toString();
-          // trigger = JSON.stringify(trigger);
-          const id = myData[mood].id;
-          // console.log(date, time, active, pleasant, trigger);
-          console.log(trigger);
+      //TODO - get database data callback here
+      render_mood_log_entries(myData);
+      function render_mood_log_entries(mood_data) {
+        var mood_logs = document.getElementById("custom_log_entry_container");
+        for (const mood in mood_data) {
+          if (Object.hasOwnProperty.call(mood_data, mood)) {
+            const date = mood_data[mood].date;
+            const time = mood_data[mood].time;
+            const active = mood_data[mood].active;
+            const pleasant = mood_data[mood].pleasant;
+            var trigger = mood_data[mood].trigger.toString();
+            // trigger = JSON.stringify(trigger);
+            const id = mood_data[mood].id;
+            // console.log(date, time, active, pleasant, trigger);
+            // console.log(trigger);
 
-          const childElem = document.createElement("div");
-          // childElem.textContent = `Date: ${date}, Time: ${time}`;
-          childElem.id = `dashboard_log_${mood}`;
-          childElem.classList.add("custom_dashboard_mood_logs");
-          mood_logs.innerHTML += `<div
+            const childElem = document.createElement("div");
+            // childElem.textContent = `Date: ${date}, Time: ${time}`;
+            childElem.id = `dashboard_log_${mood}`;
+            childElem.classList.add("custom_dashboard_mood_logs");
+            mood_logs.innerHTML += `<div
               class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
               style="height: 50px"
             >
@@ -126,46 +129,142 @@
                 <button id='dashboard_delete_button_${id}' value='${id}' class="dashboard_button_log_delete btn btn-light">Delete</button></span
               >
             </div>`;
+          }
         }
+        add_eventlistener_mood_entries();
       }
-    </script>
-    <script>
-      const edit_buttons = document.querySelectorAll(
-        ".dashboard_button_log_edit"
-      );
-      const delete_buttons = document.querySelectorAll(
-        ".dashboard_button_log_delete"
-      );
-      edit_buttons.forEach((edit_butt) => {
-        edit_butt.addEventListener("click", dashboardButtonsFunc);
-      });
-      delete_buttons.forEach((delete_butt) => {
-        delete_butt.addEventListener("click", dashboardButtonsFunc);
-      });
+      function add_eventlistener_mood_entries() {
+        const edit_buttons = document.querySelectorAll(
+          ".dashboard_button_log_edit"
+        );
+        const delete_buttons = document.querySelectorAll(
+          ".dashboard_button_log_delete"
+        );
+        edit_buttons.forEach((button) => {
+          button.addEventListener("click", dashboardButtonsFunc);
+        });
+        delete_buttons.forEach((button) => {
+          button.addEventListener("click", dashboardButtonsFunc);
+        });
+      }
       function dashboardButtonsFunc(elem) {
-        console.log("edit buttons is clicked");
-        console.log("button id: " + elem.target.id);
+        const row_id = elem.target.value;
+        mood_data = myData; //object with actual data from backend
+        console.log("button clicked id: " + elem.target.id);
         //value contains the mood log id
-        // dashboard_input_trigger_ for id of connected input field
-        console.log("button value/mood log id: " + elem.target.value);
         if (elem.target.id.includes("edit")) {
-          console.log("edit button");
-          var input_field_id = "dashboard_input_trigger_" + elem.target.value;
+          console.log("edit button clicked start");
+          //get connected input field and delete button
+          var input_field_id = "dashboard_input_trigger_" + row_id;
           var edit_button = elem.target;
+          var delete_button = document.getElementById(
+            "dashboard_delete_button_" + row_id
+          );
           input_field = document.getElementById(input_field_id);
-          // console.log(input_field);
           if (input_field.disabled === true) {
             input_field.disabled = false;
             edit_button.innerHTML = "Save";
-            edit_button.id = "dashboard_save_button_" + elem.target.value;
-            //TODO - get delete button and change to cancel button
-            console.log("changed to enabled");
+            edit_button.id = "dashboard_save_button_" + row_id;
+            delete_button.id = "dashboard_cancel_button_" + row_id;
+            delete_button.innerHTML = "Cancel";
+            console.log(
+              "Row id: " +
+                row_id +
+                ", Input changed to enabled, edit->save, delete->cancel"
+            );
           } else {
+            console.log(
+              "input field with id: " + row_id + " something went wrong"
+            );
           }
-          //TODO - edit callback here
+          console.log("edit button clicked end");
+        } else if (elem.target.id.includes("save")) {
+          console.log("save button clicked start");
+          //get connected input field and delete button
+          var save_button = elem.target;
+          var cancel_button = document.getElementById(
+            "dashboard_cancel_button_" + row_id
+          );
+          input_field = document.getElementById(
+            "dashboard_input_trigger_" + row_id
+          );
+          if (input_field.disabled === false) {
+            input_field.disabled = true;
+            save_button.innerHTML = "Edit";
+            save_button.id = "dashboard_edit_button_" + row_id;
+            cancel_button.id = "dashboard_delete_button_" + row_id;
+            cancel_button.innerHTML = "Delete";
+            //TODO - backend call save mood trigger update here
+            var backend_successfull = true;
+            if (backend_successfull) {
+              console.log(
+                "Row id: " +
+                  row_id +
+                  ", Input is saved and changed to disabled, save->edit, cancel->delete"
+              );
+            } else {
+              console.log(
+                "update backend call " + row_id + " something went wrong"
+              );
+            }
+          } else {
+            console.log(
+              "input field with id: " + row_id + " something went wrong"
+            );
+          }
+          console.log("save button clicked end");
         } else if (elem.target.id.includes("delete")) {
-          console.log("delete button");
-          //TODO - delete callback here
+          console.log("delete button clicked start");
+          //delete mood log entry
+          var delete_button = elem.target;
+          //TODO - backend call delete mood log entry here
+          let backend_successfull = delete mood_data[row_id];
+          // let backend_successfull = true;
+          if (backend_successfull) {
+            console.log("Row id: " + row_id + ", delete entry was successful");
+            location.reload;
+          } else {
+            console.log(
+              "delete entry backend call " + row_id + " something went wrong"
+            );
+          }
+          render_mood_log_entries(mood_data);
+          console.log("delete button clicked end");
+        } else if (elem.target.id.includes("cancel")) {
+          console.log("cancel button clicked start");
+          //nothing changed
+          //get connected input field and edit button
+          var cancel_button = elem.target;
+          var save_button = document.getElementById(
+            "dashboard_save_button_" + row_id
+          );
+          input_field = document.getElementById(
+            "dashboard_input_trigger_" + row_id
+          );
+          if (input_field.disabled === false) {
+            input_field.disabled = true;
+            save_button.innerHTML = "Edit";
+            save_button.id = "dashboard_edit_button_" + row_id;
+            cancel_button.id = "dashboard_delete_button_" + row_id;
+            cancel_button.innerHTML = "Delete";
+            if (mood_data[row_id] != undefined) {
+              input_field.value = mood_data[row_id]["trigger"];
+            } else {
+              console.log(
+                "mood log with id: " + row_id + " is already deleted"
+              );
+            }
+            console.log(
+              "Row id: " +
+                row_id +
+                ", Input is reset and changed to disabled, save->edit, cancel->delete"
+            );
+          } else {
+            console.log(
+              "input field with id: " + row_id + " something went wrong"
+            );
+          }
+          console.log("cancel button clicked end");
         } else {
           console.log("something went wrong, button is not defined");
         }
