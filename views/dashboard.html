@@ -50,7 +50,8 @@
         "
       >
         <div
-          class="custom_modal_wrapper_dashboard p-0 pt-5 bg-transparent h-100 w-100 container d-flex flex-column align-items-center overflow-visible"
+          class="custom_modal_wrapper_dashboard p-0 pt-5 pb-5 bg-transparent h-100 w-100 container d-flex flex-column align-items-center overflow-visible"
+          id="custom_modal_wrapper_dashboard"
         >
           <div
             class="custom_chartjs_wrapper w-100 d-flex flex-column align-items-center p-0 m-0"
@@ -174,8 +175,8 @@
           var new_headline = document.createElement("h1");
           new_headline.textContent = headline_text;
 
-          console.log(chart_div);
-          console.log(container_parent);
+          // console.log(chart_div);
+          // console.log(container_parent);
           container_parent.insertBefore(new_headline, chart_div);
         }
         //if size of parent container gets changed
@@ -264,6 +265,14 @@
                   </div>`;
           }
         }
+        //resize container adapted to content
+        // console.log(
+        //   "scrollheight container: " + mood_logs_container.scrollHeight
+        // );
+        mood_logs_container.style.height =
+          mood_logs_container.scrollHeight + "px";
+        // console.log("container height: " + mood_logs_container.style.height);
+
         add_eventlistener_mood_entries(mood_data);
       }
       function add_eventlistener_mood_entries(mood_data) {
