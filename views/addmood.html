@@ -142,8 +142,6 @@
       var headline2 = "How are you feeling today?";
       var button_submit = "Save";
       var button_cancel = "Cancel";
-      var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
-      var icon_white = "<img src='../assets/low_vision.svg'/> ";
 
       document.getElementById("signup_title").innerHTML = title;
       document.getElementById("signup_headline2").innerHTML = headline2;
@@ -151,37 +149,6 @@
         button_submit;
       document.getElementById("custom_modal_button_cancel").innerHTML =
         button_cancel;
-      document.getElementById("password_visible_icon").innerHTML = icon_black;
-
-      document
-        .getElementById("signup_button")
-        .addEventListener("click", myfunc);
-      function myfunc(params) {
-        console.log("check validation first and then submit data");
-      }
-
-      document
-        .getElementById("password_visible_icon")
-        .addEventListener("click", password_visibility);
-      function password_visibility() {
-        var x = document.getElementById("signup_password_input");
-        console.log("1: " + x.type);
-        if (x.type === "password") {
-          x.type = "text";
-        } else {
-          x.type = "password";
-        }
-        console.log("2: " + x.type);
-        var icon_visibility = document.getElementById("password_visible_icon");
-        if (!icon_visibility.classList.contains(".active")) {
-          icon_visibility.classList.add(".active");
-          icon_visibility.innerHTML = icon_white;
-        } else {
-          icon_visibility.classList.remove(".active");
-          icon_visibility.innerHTML = icon_black;
-        }
-        console.log("but: " + icon_visibility.classList);
-      }
     </script>
   </body>
 </html>

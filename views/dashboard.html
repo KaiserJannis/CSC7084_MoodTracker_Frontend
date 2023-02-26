@@ -41,18 +41,20 @@
     <div class="site_wrapper vw-100 vh-100">
       <div id="header" style="position: fixed; z-index: 100"></div>
       <div
-        class="custom_site_wrapper w-100 h-100 d-flex flex-row align-items-center justify-content-center overflow-y-auto"
+        class="custom_site_wrapper_dashboard w-100 h-100 d-flex flex-row align-items-center justify-content-center overflow-y-auto"
         style="
           position: fixed;
           height: calc(100vh-56px);
           margin-bottom: 56px !important;
+          padding-top: 56px !important;
         "
       >
         <div
-          class="custom_modal_wrapper bg-transparent p-0 w-100 mh-100 container d-flex flex-column overflow-visible"
+          class="custom_modal_wrapper_dashboard p-0 pt-5 bg-transparent h-100 w-100 container d-flex flex-column align-items-center overflow-visible"
         >
           <div
-            class="custom_chartjs_wrapper w-100 d-flex justify-content-center p-0 m-0"
+            class="custom_chartjs_wrapper w-100 d-flex flex-column align-items-center p-0 m-0"
+            style="height: 250px"
           >
             <canvas id="active_pleasant_chart"></canvas>
           </div>
@@ -66,13 +68,15 @@
     <script src="data.js"></script>
     <script src="data_chart.js"></script>
     <script>
-      dashboard_chart(random_test_data, "active_pleasant_chart");
-      function dashboard_chart(chart_data, canvas_chart_id) {
+      dashboard_chart(
+        random_test_data,
+        "active_pleasant_chart",
+        "My custom headline"
+      );
+      function dashboard_chart(chart_data, canvas_chart_id, headline_text) {
         if (!chart_data) {
           console.log("no chart data defined");
         }
-        //resize canvas
-        resize_canvas(canvas_chart_id);
 
         let dates = [];
         let active_values = [];
@@ -98,56 +102,83 @@
           .getElementById(canvas_chart_id.toString())
           .getContext("2d");
 
-        let chart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: dates.flat(),
-            datasets: [
+        let data = {
+          labels: dates.flat(),
+          datasets: [
+            {
+              label: "Active",
+              data: active_values.flat(),
+              borderColor: "yellow",
+              fill: false,
+            },
+            {
+              label: "Pleasant",
+              data: pleasant_values.flat(),
+              borderColor: "blue",
+              fill: false,
+            },
+          ],
+        };
+
+        let options = {
+          respnsive: true,
+          maintainAspectRatio: false,
+          scale: {
+            xAxes: [
               {
-                label: "Active",
-                data: active_values.flat(),
-                borderColor: "red",
-                fill: false,
+                type: "time",
+                time: {
+                  parser: "DD.MM.YYYY HH:mm",
+                  tooltipFormat: "lll",
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "Date",
+                },
               },
+            ],
+            yAxes: [
               {
-                label: "Pleasant",
-                data: pleasant_values.flat(),
-                borderColor: "blue",
-                fill: false,
+                ticks: {
+                  beginAtZero: true,
+                  max: 10,
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "Value",
+                },
               },
             ],
           },
-          options: {
-            scales: {
-              xAxes: [
-                {
-                  type: "time",
-                  time: {
-                    parser: "DD.MM.YYYY HH:mm",
-                    tooltipFormat: "lll",
-                  },
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Date",
-                  },
-                },
-              ],
-              yAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true,
-                    max: 10,
-                  },
-                  scaleLabel: {
-                    display: true,
-                    labelString: "Value",
-                  },
-                },
-              ],
-            },
-          },
+        };
+
+        let chart = new Chart(ctx, {
+          type: "line",
+          data: data,
+          options: options,
         });
-        // console.log(chart);
+        //add hover style to head
+        add_hover_style();
+        function add_hover_style() {
+          var style = document.createElement("style");
+          style.innerHTML = "canvas:hover{cursor:pointer}";
+          document.head.appendChild(style);
+        }
+        //add a headline above the chartjs (added to the parent of the parent of the canvas)
+        add_headline_before_chart(canvas_chart_id, headline_text);
+        function add_headline_before_chart(canvas_chart_id, headline_text) {
+          var chart_div = document.querySelector(
+            "#" + canvas_chart_id
+          ).parentNode;
+          var container_parent = chart_div.parentNode;
+          var new_headline = document.createElement("h1");
+          new_headline.textContent = headline_text;
+
+          console.log(chart_div);
+          console.log(container_parent);
+          container_parent.insertBefore(new_headline, chart_div);
+        }
+        //if size of parent container gets changed
         window.addEventListener("resize", () => {
           let canvas = document.getElementById(canvas_chart_id);
           canvas.width = canvas.parentElement.clientWidth;
@@ -158,8 +189,9 @@
       }
     </script>
     <script>
+      //TODO - crosssite scription and mysql injection
       //TODO - get database data callback here
-      render_mood_log_entries(myData);
+      render_mood_log_entries(myData); //only here name of data object
       function render_mood_log_entries(mood_data) {
         if (mood_data === undefined) {
           console.log("mood data is undefined. Looks like this:");
