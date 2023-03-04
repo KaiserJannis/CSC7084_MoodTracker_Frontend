@@ -17,6 +17,7 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="./stylesheet.css" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css?family=Poppins"
@@ -40,15 +41,15 @@
         >
           <div class="container w-50 login_form_wrapper">
             <div class="d-flex mb-3 login_headline2_wrapper">Login</div>
-            <form class="needs-validation" novalidate>
+            <form id="custom_login_form" class="needs-validation" novalidate>
               <div class="mb-3 login_username_wrapper">
                 <label for="username_input" class="form-label">Username</label>
                 <input
                   type="text"
                   class="form-control"
+                  name="username"
                   id="username_input"
                   placeholder="username"
-                  value=""
                   required
                 />
               </div>
@@ -58,9 +59,9 @@
                   <input
                     type="password"
                     class="form-control"
+                    name="password"
                     id="password_input"
                     placeholder="password"
-                    value=""
                     required
                   />
                   <span class="input-group-text p-0" id="password_visible">
@@ -98,6 +99,36 @@
         </div>
       </div>
     </div>
-    <script src="../functions/validationCheck.js"></script>
+    <!-- <script src="../functions/validationCheck.js"></script> -->
+
+    <script>
+      const form = document.getElementById("custom_login_form");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault(); //prevent from emediatly submitting
+        const form_data = new FormData(form);
+        const data = Object.fromEntries(form_data);
+        //send now form data using POST
+        axios
+          .post("http://localhost:3000/api/login", {
+            username: data.username,
+            password: data.password,
+          })
+          .then((response) => {
+            console.log(response.data.message);
+            // console.log(response);
+            // debugger;
+            window.sessionStorage.setItem("sessionToken", response.data.token);
+            window.sessionStorage.setItem("userId", response.data.userId);
+            console.log(window.location.pathname);
+            window.location.href = "./dashboard.html";
+          })
+          .catch((error) => {
+            console.log(error);
+            console.error(error);
+          });
+      });
+      // When the login is successful, the server sends a response with the session token, which is then saved to the session storage using window.sessionStorage.setItem('token', token);. This token can then be accessed from any page in the same domain
+    </script>
   </body>
 </html>

@@ -21,6 +21,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <!-- <link href="./stylesheet.css" rel="stylesheet" ></link> -->
     <link href="./add.css" rel="stylesheet" />
@@ -68,6 +69,13 @@
     </div>
     <script src="data.js"></script>
     <script src="data_chart.js"></script>
+    <script src="../functions/sessionToken.js"></script>
+    <script>
+      window.onload = function () {
+        const valid = validateSessionToken();
+        console.log(valid);
+      };
+    </script>
     <script>
       dashboard_chart(
         random_test_data,
