@@ -17,6 +17,7 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="./stylesheet.css" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css?family=Poppins"
@@ -29,12 +30,12 @@
   </head>
   <body>
     <div
-      class="vw-100 vh-100 d-flex align-items-center justify-content-center signup_site_wrapper"
+      class="vw-100 vh-100 p-0 d-flex align-items-center justify-content-center signup_site_wrapper"
     >
       <div
-        class="container overflow-y-auto d-flex flex-column rounded-5 bg-body-secondary signup_container_wrapper"
+        class="container p-0 m-0 overflow-y-auto d-flex flex-column rounded-5 bg-body-secondary signup_container_wrapper"
       >
-        <div class="d-flex signup_headline_wrapper">
+        <div class="d-flex signup_headline_wrapper mt-5">
           <span id="signup_title"></span>
         </div>
         <div
@@ -45,7 +46,7 @@
               class="d-flex mb-3 signup_headline2_wrapper"
               id="signup_headline2"
             ></div>
-            <form class="needs-validation" novalidate>
+            <form class="needs-validation" id="custom_signup_form" novalidate>
               <div class="mb-3 signup_username_wrapper">
                 <label for="signup_username_input" class="form-label"
                   >Username</label
@@ -55,7 +56,7 @@
                   class="form-control signup_input"
                   id="signup_username_input"
                   placeholder="username"
-                  value=""
+                  name="username"
                   required
                 />
               </div>
@@ -69,7 +70,7 @@
                     class="form-control signup_input"
                     id="signup_password_input"
                     placeholder="password"
-                    value=""
+                    name="password"
                     required
                   />
                   <span class="input-group-text p-0" id="password_visible">
@@ -92,7 +93,7 @@
                   class="form-control signup_input"
                   id="signup_email_input"
                   placeholder="example@mood.com"
-                  value=""
+                  name="email"
                   required
                 />
               </div>
@@ -112,7 +113,7 @@
         </div>
       </div>
     </div>
-    <script src="../functions/validationCheck.js"></script>
+    <!-- <script src="../functions/validationCheck.js"></script> -->
     <script>
       var title = "Create your Account";
       var headline2 = "What are your credentials?";
@@ -124,13 +125,6 @@
       document.getElementById("signup_headline2").innerHTML = headline2;
       document.getElementById("signup_button").innerHTML = button;
       document.getElementById("password_visible_icon").innerHTML = icon_black;
-
-      document
-        .getElementById("signup_button")
-        .addEventListener("click", myfunc);
-      function myfunc(params) {
-        console.log("check validation first and then submit data");
-      }
 
       document
         .getElementById("password_visible_icon")
@@ -153,6 +147,108 @@
           icon_visibility.innerHTML = icon_black;
         }
         console.log("but: " + icon_visibility.classList);
+      }
+    </script>
+    <script>
+      validationCheck();
+      function validationCheck() {
+        // "use strict";
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener("submit", async function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+              form.classList.add("was-validated");
+            } else {
+              //form submission here
+              await submitForm(form, event);
+            }
+
+            // console.log(event);
+          });
+          // console.log(form.classList);
+        });
+      }
+      async function submitForm(form, event) {
+        // const form = document.getElementById("custom_signup_form");
+
+        event.preventDefault(); //prevent from emediatly submitting
+        const form_data = new FormData(form);
+        const data = Object.fromEntries(form_data);
+        //send now form data using POST
+        console.log(data);
+        axios
+          .post("http://localhost:3000/api/user/add", {
+            username: data.username,
+            password: data.password,
+            email: data.email,
+          })
+          .then((response) => {
+            console.log(response.data.message);
+            form.reset();
+            form.classList.remove("was-validated");
+            if (!document.querySelector("#signup_error_message")) {
+              const failMessage = document.getElementById("signup_headline2");
+              const newDiv = document.createElement("div");
+              newDiv.textContent = response.data.message;
+              newDiv.id = "signup_error_message";
+              newDiv.classList.add("d-flex");
+              // newDiv.classList.add("justify-content-center");
+              newDiv.classList.add("text-success");
+              failMessage.insertAdjacentElement("afterend", newDiv);
+              // setTimeout(function () {
+              //   newDiv.remove();
+              // }, 20000);
+            } else {
+              const elem = document.getElementById("signup_error_message");
+              elem.textContent = response.data.message;
+              if (elem.classList.contains("text-danger")) {
+                elem.classList.remove("text-danger");
+              }
+              elem.classList.add("text-success");
+              // setTimeout(function () {
+              //   elem.remove();
+              // }, 20000);
+            }
+
+            // console.log(response);
+            // debugger;
+            // window.sessionStorage.setItem("sessionToken", response.data.token);
+            // window.sessionStorage.setItem("userId", response.data.userId);
+            // console.log(window.location.pathname);
+            // window.location.href = "./dashboard.html";
+          })
+          .catch((error) => {
+            console.log(error);
+            // console.error(error);
+            //only if error message not already displayed
+            if (!document.querySelector("#signup_error_message")) {
+              const failMessage = document.getElementById("signup_headline2");
+              const newDiv = document.createElement("div");
+              newDiv.textContent = error.response.data.message;
+              newDiv.id = "signup_error_message";
+              newDiv.classList.add("d-flex");
+              // newDiv.classList.add("justify-content-center");
+              newDiv.classList.add("text-danger");
+              failMessage.insertAdjacentElement("afterend", newDiv);
+              timeoutId = setTimeout(function () {
+                newDiv.remove();
+              }, 10000);
+            } else {
+              const elem = document.getElementById("signup_error_message");
+              elem.innerHTML = error.response.data.message;
+              newDiv.classList.add("text-danger");
+              if (elem.classList.contains("text-success")) {
+                elem.classList.remove("text-success");
+              }
+              setTimeout(function () {
+                elem.remove();
+              }, 10000);
+            }
+          });
       }
     </script>
   </body>

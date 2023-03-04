@@ -40,7 +40,12 @@
           class="d-flex flex-column w-100 mt-3 align-items-center login_form_container_wrapper"
         >
           <div class="container w-50 login_form_wrapper">
-            <div class="d-flex mb-3 login_headline2_wrapper">Login</div>
+            <div
+              class="d-flex mb-3 login_headline2_wrapper"
+              id="login_login_headline"
+            >
+              Login
+            </div>
             <form id="custom_login_form" class="needs-validation" novalidate>
               <div class="mb-3 login_username_wrapper">
                 <label for="username_input" class="form-label">Username</label>
@@ -125,7 +130,23 @@
           })
           .catch((error) => {
             console.log(error);
-            console.error(error);
+            // console.error(error);
+            //only if error message not already displayed
+            if (!document.querySelector("#login_error_message")) {
+              const failMessage = document.getElementById(
+                "login_login_headline"
+              );
+              const newDiv = document.createElement("div");
+              newDiv.textContent = error.response.data.message;
+              newDiv.id = "login_error_message";
+              newDiv.classList.add("d-flex");
+              // newDiv.classList.add("justify-content-center");
+              newDiv.classList.add("text-danger");
+              failMessage.insertAdjacentElement("afterend", newDiv);
+              setTimeout(function () {
+                newDiv.remove();
+              }, 20000);
+            }
           });
       });
       // When the login is successful, the server sends a response with the session token, which is then saved to the session storage using window.sessionStorage.setItem('token', token);. This token can then be accessed from any page in the same domain
