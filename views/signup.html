@@ -98,7 +98,7 @@
                 />
               </div>
               <div
-                class="d-flex p-0 mt-5 mb-5 justify-content-center signup_submit_wrapper"
+                class="d-flex p-0 mt-5 justify-content-center signup_submit_wrapper"
               >
                 <button
                   class="btn pt-0 pb-0 ps-4 pe-4 btn-primary custom_button_text"
@@ -109,6 +109,18 @@
                 </button>
               </div>
             </form>
+            <div
+              class="d-flex mb-4 justify-content-center mt-3 login_signup_wrapper"
+            >
+              <span class="me-2 login_notregisteredyet"
+                >Already registered?
+              </span>
+              <span class="ms-2 login_signup"
+                ><a class="btn m-0 p-0 btn-link" href="./login.html" role="link"
+                  >Login</a
+                >
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -119,7 +131,7 @@
       var headline2 = "What are your credentials?";
       var button = "Sign up";
       var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
-      var icon_white = "<img src='../assets/low_vision.svg'/> ";
+      var icon_white = "<img src='../assets/low_vision_grey.svg'/> ";
 
       document.getElementById("signup_title").innerHTML = title;
       document.getElementById("signup_headline2").innerHTML = headline2;
@@ -131,13 +143,13 @@
         .addEventListener("click", password_visibility);
       function password_visibility() {
         var x = document.getElementById("signup_password_input");
-        console.log("1: " + x.type);
+        // console.log("1: " + x.type);
         if (x.type === "password") {
           x.type = "text";
         } else {
           x.type = "password";
         }
-        console.log("2: " + x.type);
+        // console.log("2: " + x.type);
         var icon_visibility = document.getElementById("password_visible_icon");
         if (!icon_visibility.classList.contains(".active")) {
           icon_visibility.classList.add(".active");
@@ -146,7 +158,7 @@
           icon_visibility.classList.remove(".active");
           icon_visibility.innerHTML = icon_black;
         }
-        console.log("but: " + icon_visibility.classList);
+        // console.log("but: " + icon_visibility.classList);
       }
     </script>
     <script>
@@ -213,13 +225,7 @@
               //   elem.remove();
               // }, 20000);
             }
-
-            // console.log(response);
-            // debugger;
-            // window.sessionStorage.setItem("sessionToken", response.data.token);
-            // window.sessionStorage.setItem("userId", response.data.userId);
-            // console.log(window.location.pathname);
-            // window.location.href = "./dashboard.html";
+            // window.location.href = "./login.html";
           })
           .catch((error) => {
             console.log(error);
@@ -240,7 +246,7 @@
             } else {
               const elem = document.getElementById("signup_error_message");
               elem.innerHTML = error.response.data.message;
-              newDiv.classList.add("text-danger");
+              elem.classList.add("text-danger");
               if (elem.classList.contains("text-success")) {
                 elem.classList.remove("text-success");
               }

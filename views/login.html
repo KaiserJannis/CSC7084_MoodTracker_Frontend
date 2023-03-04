@@ -35,7 +35,9 @@
       <div
         class="container overflow-y-auto d-flex flex-column rounded-5 bg-body-secondary login_container_wrapper"
       >
-        <div class="d-flex login_headline_wrapper">Track your mood today</div>
+        <div class="d-flex mt-5 login_headline_wrapper">
+          Track your mood today
+        </div>
         <div
           class="d-flex flex-column w-100 mt-3 align-items-center login_form_container_wrapper"
         >
@@ -65,12 +67,18 @@
                     type="password"
                     class="form-control"
                     name="password"
-                    id="password_input"
+                    id="login_password_input"
                     placeholder="password"
                     required
                   />
                   <span class="input-group-text p-0" id="password_visible">
-                    <button type="button" class="btn">Icon</button>
+                    <button
+                      type="button"
+                      id="password_visible_icon"
+                      class="btn"
+                    >
+                      Icon
+                    </button>
                   </span>
                 </div>
               </div>
@@ -105,15 +113,66 @@
       </div>
     </div>
     <!-- <script src="../functions/validationCheck.js"></script> -->
-
     <script>
-      const form = document.getElementById("custom_login_form");
+      var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
+      var icon_white = "<img src='../assets/low_vision_grey.svg'/> ";
+      document.getElementById("password_visible_icon").innerHTML = icon_black;
+      document
+        .getElementById("password_visible_icon")
+        .addEventListener("click", password_visibility);
+      function password_visibility() {
+        var x = document.getElementById("login_password_input");
+        // console.log("1: " + x.type);
+        if (x.type === "password") {
+          x.type = "text";
+        } else {
+          x.type = "password";
+        }
+        // console.log("2: " + x.type);
+        var icon_visibility = document.getElementById("password_visible_icon");
+        if (!icon_visibility.classList.contains(".active")) {
+          icon_visibility.classList.add(".active");
+          icon_visibility.innerHTML = icon_white;
+        } else {
+          icon_visibility.classList.remove(".active");
+          icon_visibility.innerHTML = icon_black;
+        }
+        // console.log("but: " + icon_visibility.classList);
+      }
+    </script>
+    <script>
+      validationCheck();
 
-      form.addEventListener("submit", (event) => {
+      function validationCheck() {
+        // "use strict";
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener("submit", async function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+              form.classList.add("was-validated");
+            } else {
+              //form submission here
+              await submitForm(form, event);
+            }
+
+            // console.log(event);
+          });
+          // console.log(form.classList);
+        });
+      }
+
+      async function submitForm(form, event) {
+        // const form = document.getElementById("custom_login_form");
+
         event.preventDefault(); //prevent from emediatly submitting
         const form_data = new FormData(form);
         const data = Object.fromEntries(form_data);
         //send now form data using POST
+        // let timeoutId = null;
         axios
           .post("http://localhost:3000/api/login", {
             username: data.username,
@@ -126,12 +185,14 @@
             window.sessionStorage.setItem("sessionToken", response.data.token);
             window.sessionStorage.setItem("userId", response.data.userId);
             console.log(window.location.pathname);
-            window.location.href = "./dashboard.html";
+            window.location.href = "./addmood.html";
           })
           .catch((error) => {
             console.log(error);
+
             // console.error(error);
             //only if error message not already displayed
+
             if (!document.querySelector("#login_error_message")) {
               const failMessage = document.getElementById(
                 "login_login_headline"
@@ -145,10 +206,21 @@
               failMessage.insertAdjacentElement("afterend", newDiv);
               setTimeout(function () {
                 newDiv.remove();
-              }, 20000);
+              }, 10000);
+            } else {
+              const newDiv = document.getElementById("login_error_message");
+              newDiv.innerHTML = error.response.data.message;
+              newDiv.classList.add("text-danger");
+              if (newDiv.classList.contains("text-success")) {
+                newDiv.classList.remove("text-success");
+              }
+              setTimeout(function () {
+                newDiv.remove();
+              }, 10000);
             }
           });
-      });
+      }
+
       // When the login is successful, the server sends a response with the session token, which is then saved to the session storage using window.sessionStorage.setItem('token', token);. This token can then be accessed from any page in the same domain
     </script>
   </body>

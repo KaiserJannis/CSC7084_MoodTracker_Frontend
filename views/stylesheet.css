@@ -2,7 +2,8 @@
 .signup_container_wrapper,
 .custom_modal_wrapper {
   width: 55%;
-  height: 75%;
+  height: fit-content;
+  max-height: 85%;
 }
 .signup_form_wrapper,
 .login_form_wrapper {
