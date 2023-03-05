@@ -57,99 +57,115 @@
                 id="signup_headline2"
               ></div>
               <div class="custom_modal_input_wrapper">
-                <table class="table table-hover align-middle">
-                  <tbody>
-                    <tr>
-                      <form
-                        id="form_settings_username"
-                        class="needs-validation"
-                        novalidate
-                      >
+                <form id="form_settings" class="needs-validation">
+                  <table class="table table-hover align-middle">
+                    <tbody>
+                      <tr>
                         <td>Username:</td>
                         <td>
                           <input
                             class="form-control"
                             id="input_settings_username"
-                            value="loaded username"
                             type="text"
                             name="username"
                             disabled
                           />
                         </td>
                         <td>
-                          <button
-                            class="btn btn-light"
-                            id="button_settings_edit_username"
-                            value="input_settings_username"
-                            type="button"
-                          >
-                            Edit now
-                          </button>
+                          <div>
+                            <button
+                              class="btn btn-light"
+                              id="button_settings_edit_username"
+                              value="input_settings_username"
+                              type="button"
+                            >
+                              Edit now
+                            </button>
+                          </div>
                         </td>
-                      </form>
-                    </tr>
-                    <tr>
-                      <form
-                        id="form_settings_password"
-                        class="needs-validation"
-                        novalidate
-                      >
+                      </tr>
+                      <tr>
+                        <td>Email:</td>
+                        <td>
+                          <input
+                            class="form-control"
+                            id="input_settings_email"
+                            type="text"
+                            name="email"
+                            disabled
+                          />
+                        </td>
+                        <td>
+                          <div>
+                            <button
+                              class="btn btn-light"
+                              id="button_settings_edit_email"
+                              value="input_settings_email"
+                              type="button"
+                            >
+                              Edit now
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
                         <td>Password:</td>
                         <td>
                           <input
                             class="form-control"
                             id="input_settings_password"
-                            value="password"
                             type="password"
                             name="password"
                             disabled
                           />
                         </td>
                         <td>
+                          <div>
+                            <button
+                              class="btn btn-light"
+                              id="button_settings_edit_password"
+                              value="input_settings_password"
+                              type="button"
+                            >
+                              Change now
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Delete all entries:</td>
+                        <td>
+                          <span id="output_settings_entries_count"></span>
+                        </td>
+                        <td>
                           <button
                             class="btn btn-light"
-                            id="button_settings_edit_password"
-                            value="input_settings_password"
+                            id="button_settings_delete_entries"
                             type="button"
+                            value="output_settings_entries_count"
                           >
-                            Change now
+                            Delete all entries now
                           </button>
                         </td>
-                      </form>
-                    </tr>
-                    <tr>
-                      <td>Delete all entries:</td>
-                      <td>
-                        <span id="output_settings_entries_count"></span>
-                      </td>
-                      <td>
-                        <button
-                          class="btn btn-light"
-                          id="button_settings_delete_entries"
-                          type="button"
-                          value="output_settings_entries_count"
-                        >
-                          Delete all entries now
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td id="output_settings_delete_account" colspan="2">
-                        Delete your account
-                      </td>
-                      <td>
-                        <button
-                          class="btn btn-light"
-                          id="button_settings_delete_account"
-                          type="button"
-                          value="output_settings_delete_account"
-                        >
-                          Delete account now
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </tr>
+                      <tr>
+                        <td id="output_settings_delete_account" colspan="2">
+                          Delete your account
+                        </td>
+                        <td>
+                          <button
+                            class="btn btn-light"
+                            id="button_settings_delete_account"
+                            type="button"
+                            value="output_settings_delete_account"
+                          >
+                            Delete account now
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
               </div>
             </div>
           </div>
@@ -158,28 +174,77 @@
     </div>
     <script src="../functions/sessionToken.js"></script>
     <script>
+      var title = "Manage your account settings";
+      var headline2 = "What do you want to change?";
+
+      document.getElementById("signup_title").innerHTML = title;
+      document.getElementById("signup_headline2").innerHTML = headline2;
+
+      var user_initial = null;
       window.onload = async function () {
         const valid = await validateSessionToken();
         // console.log("session validation: " + valid);
         //TODO -  call getUser onLoad() and set as value of inputs
-        const user_data = await getUserData();
-        console.log(user_data.data);
-        //set loaded user values
-        const input_username = document.getElementById(
-          "input_settings_username"
-        );
-        input_username.value = user_data.data.username;
-        const output_entries = document.getElementById(
-          "output_settings_entries_count"
-        );
-        let entry_text = "entries";
-        if (user_data.data.entryCount === 1) {
-          entry_text = "entry";
-        }
-        output_entries.textContent =
-          user_data.data.entryCount + " " + entry_text + " stored";
-        // debugger;
+        user_initial = await getUserData();
+        console.log(user_initial.data);
+        await setInitialValues(user_initial);
       };
+      //set initial values
+      async function setInitialValues(user_data, type) {
+        if (arguments.length === 1) {
+          //set loaded user values
+          const input_username = document.getElementById(
+            "input_settings_username"
+          );
+          input_username.value = user_data.data.username;
+          const input_email = document.getElementById("input_settings_email");
+
+          input_email.value = user_data.data.email;
+          const input_password = document.getElementById(
+            "input_settings_password"
+          );
+          input_password.value = "password";
+          const output_entries = document.getElementById(
+            "output_settings_entries_count"
+          );
+          let entry_text = "entries";
+          if (user_data.data.entryCount === 1) {
+            entry_text = "entry";
+          }
+          output_entries.textContent =
+            user_data.data.entryCount + " " + entry_text + " stored";
+        } else {
+          const input = document.getElementById("input_settings_" + type);
+          // console.log(input);
+          if (input) {
+            input.value = user_data.data[type];
+          }
+          // debugger;
+        }
+      }
+      //add submit events to forms
+      async function formSubmit() {
+        // debugger;
+        const form_settings_view = document.getElementById("form_settings");
+        // console.log(form_settings_view);
+
+        const form_data = new FormData(form_settings_view);
+        const data = Object.fromEntries(form_data);
+        console.log(data);
+        // debugger;
+        if (data.username) {
+          console.log("username update");
+        }
+        if (data.password) {
+          console.log("password update");
+        }
+        if (data.email) {
+          console.log("email update");
+        }
+        // debugger;
+      }
+
+      setEventListener();
       async function getUserData() {
         let result = null;
         try {
@@ -198,29 +263,7 @@
         }
         return result.data;
       }
-    </script>
-    <script>
-      var title = "Manage your account settings";
-      var headline2 = "What do you want to change?";
-      var entry_count = 123;
-
-      document.getElementById("signup_title").innerHTML = title;
-      document.getElementById("signup_headline2").innerHTML = headline2;
-
-      document
-        .getElementById("button_settings_edit_password")
-        .addEventListener("click", settingUsernamePasswordFunc);
-      document
-        .getElementById("button_settings_edit_username")
-        .addEventListener("click", settingUsernamePasswordFunc);
-      document
-        .getElementById("button_settings_delete_entries")
-        .addEventListener("click", deleteEntries);
-      document
-        .getElementById("button_settings_delete_account")
-        .addEventListener("click", deleteAccount);
-
-      function deleteEntries(elem) {
+      async function deleteEntries(elem) {
         var output_x = document.getElementById(elem.target.value);
         console.log(output_x);
         console.log("delete all entries now");
@@ -228,45 +271,175 @@
         //TODO - entries_count = call load number of entries here for validation
         // output_x.innerHTML=entries_count
       }
-      function deleteAccount(elem) {
+      async function deleteAccount(elem) {
         var output_x = document.getElementById(elem.target.value);
         console.log(output_x);
         console.log("delete account now");
         //TODO - backend call delete account here
         //TODO - delete successfull change background color green
       }
-      function settingUsernamePasswordFunc(elem) {
+      async function settingUsernamePasswordFunc(elem) {
         //input field
         var input_x = document.getElementById(elem.target.value);
         //button which is clicked
-        var button_x = elem.target;
-        debugger;
-
+        var button_x = document.getElementById(elem.target.id);
         // console.log("input value: " + input_x.value);
+        let removeChild = null;
+        // const input_x_value = input_x.value;
+
+        const newButton = document.createElement("button");
+        newButton.id = button_x.id;
+        newButton.value = button_x.value;
+        newButton.classList.add("btn");
+        newButton.classList.add("btn-light");
+
         if (input_x.disabled === true) {
-          button_x.innerHTML = "Save now";
+          //create cancel button next to save
+          const cancel_button = document.createElement("button");
+          cancel_button.classList.add("btn");
+          cancel_button.classList.add("btn-light");
+          cancel_button.classList.add("ms-1");
+          cancel_button.textContent = "Cancel";
+          cancel_button.value = button_x.value;
+          cancel_button.type = "button";
+          let type_id = null;
+          if (button_x.id.includes("username")) {
+            type_id = "username";
+          } else if (button_x.id.includes("password")) {
+            type_id = "password";
+          } else if (button_x.id.includes("email")) {
+            type_id = "email";
+          }
+          cancel_button.id = "button_settings_cancel_" + type_id;
+          //
+          newButton.type = "submit";
+          newButton.setAttribute("form", "form_settings");
+          newButton.innerHTML = "Save now";
           if (input_x.id.includes("password")) {
             // console.log("includes password");
             input_x.type = "text";
             input_x.value = "";
             input_x.placeholder = "new password";
+            cancel_button.id = "button_settings_cancel_password";
           }
           console.log("changed to enabled");
           input_x.disabled = false;
+          // await removeCancelButton(button_x);
+          if (!button_x.id.includes("cancel")) {
+            button_x.insertAdjacentElement("afterend", cancel_button);
+          }
         } else {
+          //input is enabled and gets disabled now
+          if (!button_x.id.includes("cancel")) {
+            console.log("submit form now");
+            await formSubmit();
+          } else {
+            //button cancel is clicked
+            const children = button_x.parentElement.children;
+            removeChild = Array.from(children).find(
+              (child) => !child.id.includes("cancel")
+            );
+            // console.log(removeChild);
+            // debugger;
+          }
           //TODO - backend call update here for change of username/password
-          button_x.innerHTML = "Edit now";
+          newButton.type = "button";
+          // newButton.removeAttribute("form");
+          newButton.innerHTML = "Edit now";
           if (input_x.id.includes("password")) {
             // console.log("includes password");
             input_x.type = "password";
-            button_x.innerHTML = "Change now";
+            input_x.value = "password";
+            newButton.textContent = "Change now";
           }
           // console.log("input val to be: " + input_x.value);
           console.log("changed to disabled");
           input_x.disabled = true;
+          //remove cancel button
+          await removeCancelButton(button_x);
+        }
+        // debugger;
+        if (!button_x.id.includes("cancel")) {
+          button_x.parentNode.replaceChild(newButton, button_x);
+        } else if (removeChild != null) {
+          // debugger;
+          //if cancel button is clicked
+          newButton.id = removeChild.id;
+          removeChild.parentNode.replaceChild(newButton, removeChild);
+          let type = null;
+          if (removeChild.id.includes("username")) {
+            type = "username";
+          } else if (removeChild.id.includes("password")) {
+            type = "password";
+          } else if (removeChild.id.includes("email")) {
+            type = "email";
+          }
+          await setInitialValues(user_initial, type);
+        }
+
+        await setEventListener();
+        // console.log("successful changed entry type");
+
+        async function removeCancelButton(button_x) {
+          const children = button_x.parentElement.children;
+          const removeChild = Array.from(children).find((child) =>
+            child.id.includes("cancel")
+          );
+          // console.log(removeChild);
+          if (removeChild) {
+            // console.log("remove child is true");
+            button_x.parentElement.removeChild(removeChild);
+          }
+        }
+      }
+      // async function eventCancelButton(event) {
+      //   // console.log(event.target);
+      //   var input = document.getElementById(event.target.value);
+      //   // debugger;
+      // }
+      async function setEventListener() {
+        document
+          .getElementById("button_settings_edit_password")
+          .addEventListener("click", settingUsernamePasswordFunc);
+        document
+          .getElementById("button_settings_edit_username")
+          .addEventListener("click", settingUsernamePasswordFunc);
+        document
+          .getElementById("button_settings_edit_email")
+          .addEventListener("click", settingUsernamePasswordFunc);
+        document
+          .getElementById("button_settings_delete_entries")
+          .addEventListener("click", deleteEntries);
+        document
+          .getElementById("button_settings_delete_account")
+          .addEventListener("click", deleteAccount);
+        const cancel_username = document.getElementById(
+          "button_settings_cancel_username"
+        );
+        if (cancel_username) {
+          cancel_username.addEventListener(
+            "click",
+            settingUsernamePasswordFunc
+          );
+        }
+        const cancel_email = document.getElementById(
+          "button_settings_cancel_email"
+        );
+        if (cancel_email) {
+          cancel_email.addEventListener("click", settingUsernamePasswordFunc);
+        }
+        const cancel_password = document.getElementById(
+          "button_settings_cancel_password"
+        );
+        if (cancel_password) {
+          cancel_password.addEventListener(
+            "click",
+            settingUsernamePasswordFunc
+          );
         }
       }
     </script>
+    <script></script>
     <script>
       // on Site load get Username, password, entry count
     </script>
