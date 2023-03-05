@@ -180,14 +180,14 @@
       document.getElementById("signup_title").innerHTML = title;
       document.getElementById("signup_headline2").innerHTML = headline2;
 
-      var user_initial = null;
+      var user_actual = null; //actual stored user data
       window.onload = async function () {
         const valid = await validateSessionToken();
         // console.log("session validation: " + valid);
         //TODO -  call getUser onLoad() and set as value of inputs
-        user_initial = await getUserData();
-        console.log(user_initial.data);
-        await setInitialValues(user_initial);
+        user_actual = await getUserData();
+        console.log(user_actual.data);
+        await setInitialValues(user_actual);
       };
       //set initial values
       async function setInitialValues(user_data, type) {
@@ -223,24 +223,42 @@
         }
       }
       //add submit events to forms
-      async function formSubmit() {
+      async function formSubmit(event) {
         // debugger;
+        event.preventDefault();
         const form_settings_view = document.getElementById("form_settings");
         // console.log(form_settings_view);
 
         const form_data = new FormData(form_settings_view);
-        const data = Object.fromEntries(form_data);
-        console.log(data);
+        const data_obj = Object.fromEntries(form_data);
+        // console.log(data_obj);
         // debugger;
-        if (data.username) {
+        let data_type = null;
+        let data = null;
+        if (data_obj.username) {
           console.log("username update");
+          data = data_obj.username;
+          data_type = Object.keys(data_obj);
         }
-        if (data.password) {
+        if (data_obj.password) {
           console.log("password update");
+          data = data_obj.password;
+          data_type = Object.keys(data_obj);
         }
-        if (data.email) {
+        if (data_obj.email) {
           console.log("email update");
+          data = data_obj.email;
+          data_type = Object.keys(data_obj);
         }
+        // console.log(data_type);
+        if (data_type && data) {
+          const result = await updateUserData({ [data_type]: data });
+          // debugger;
+          if (result) {
+            return result;
+          }
+        }
+        return false;
         // debugger;
       }
 
@@ -258,10 +276,45 @@
           });
           // console.log("result: " + result);
           // console.log(result);
+          return result.data;
+        } catch (error) {
+          console.log(error);
+          return false;
+        }
+      }
+      async function updateUserData(data) {
+        try {
+          // debugger;
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          // console.log([data]);
+          const type = Object.keys(data);
+          const type_data = data[type];
+          // console.log(type, type_data);
+          if (data) {
+            const result = await axios.patch(
+              "http://localhost:3000/api/user/update",
+              {
+                [type]: type_data,
+              },
+              {
+                headers: {
+                  Authorization: sessionToken,
+                  "X-User-Id": userId,
+                },
+              }
+            );
+            // debugger;
+            console.log(result.data.message);
+            // debugger;
+            if (result.data.success) {
+              return result.data.message;
+            }
+          }
         } catch (error) {
           console.log(error);
         }
-        return result.data;
+        return false;
       }
       async function deleteEntries(elem) {
         var output_x = document.getElementById(elem.target.value);
@@ -332,7 +385,10 @@
           //input is enabled and gets disabled now
           if (!button_x.id.includes("cancel")) {
             console.log("submit form now");
-            await formSubmit();
+            const submitResp = await formSubmit(elem);
+            if (submitResp) {
+              console.log("submit response: " + submitResp);
+            }
           } else {
             //button cancel is clicked
             const children = button_x.parentElement.children;
@@ -374,7 +430,7 @@
           } else if (removeChild.id.includes("email")) {
             type = "email";
           }
-          await setInitialValues(user_initial, type);
+          await setInitialValues(user_actual, type);
         }
 
         await setEventListener();
@@ -392,11 +448,7 @@
           }
         }
       }
-      // async function eventCancelButton(event) {
-      //   // console.log(event.target);
-      //   var input = document.getElementById(event.target.value);
-      //   // debugger;
-      // }
+
       async function setEventListener() {
         document
           .getElementById("button_settings_edit_password")
