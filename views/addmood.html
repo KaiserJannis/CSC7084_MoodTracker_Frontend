@@ -53,10 +53,10 @@
           >
             <div class="container custom_modal_form_wrapper">
               <div
-                class="d-flex mb-3 custom_modal_headline2_wrapper"
+                class="d-flex mt-4 mb-3 custom_modal_headline2_wrapper"
                 id="signup_headline2"
               ></div>
-              <form class="needs-validation">
+              <form class="needs-validation" id="form_add_mood" novalidate>
                 <div class="mb-3 custom_modal_input_wrapper">
                   <label
                     for="custom_modal_input_1"
@@ -70,6 +70,7 @@
                     value=""
                     min="0"
                     max="10"
+                    name="active"
                     required
                   />
                   <div class="d-flex flex-row justify-content-between w-100">
@@ -94,6 +95,7 @@
                     value=""
                     min="0"
                     max="10"
+                    name="pleasant"
                     required
                   />
                   <div class="d-flex flex-row justify-content-between w-100">
@@ -104,7 +106,10 @@
                     >
                   </div>
                 </div>
-                <div class="mb-3 custom_modal_input_wrapper">
+                <div
+                  id="mood_trigger_textarea"
+                  class="mb-5 custom_modal_input_wrapper"
+                >
                   <label
                     for="custom_modal_input_3"
                     class="custom_modal_input_label form-label"
@@ -114,11 +119,11 @@
                     class="custom_modal_input form-control"
                     id="custom_modal_input_3"
                     placeholder="What triggered your mood?"
-                    value=""
+                    name="trigger"
                   ></textarea>
                 </div>
                 <div
-                  class="d-flex p-0 mt-5 mb-5 justify-content-center signup_submit_wrapper"
+                  class="d-flex p-0 mt-3 mb-5 justify-content-center signup_submit_wrapper"
                 >
                   <button
                     class="custom_button_modal me-3 btn pt-0 pb-0 ps-4 pe-4 btn-light"
@@ -157,6 +162,62 @@
         button_submit;
       document.getElementById("custom_modal_button_cancel").innerHTML =
         button_cancel;
+    </script>
+    <script>
+      const form = document.getElementById("form_add_mood");
+      form.addEventListener("submit", async function (event) {
+        await submitForm(form, event);
+      });
+      async function submitForm(form, event) {
+        event.preventDefault(); //prevent from immediately submitting
+        const form_data = new FormData(form);
+        const data = Object.fromEntries(form_data);
+        //send now form data using POST
+        // console.log(data);
+        // debugger;
+        try {
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          // console.log(userId);
+          const result = await axios.post(
+            "http://localhost:3000/api/mood/add",
+            {
+              active: data.active,
+              pleasant: data.pleasant,
+              trigger: data.trigger,
+            },
+            {
+              headers: {
+                Authorization: sessionToken,
+                "X-User-Id": userId,
+              },
+            }
+          );
+          console.log(result.data.message);
+          form.reset();
+          window.location.href = "./dashboard.html";
+        } catch (error) {
+          //save mood was not successful
+          console.log(error.response.data.message);
+          if (!document.querySelector("#add_mood_error_message")) {
+            const newDiv = document.createElement("div");
+            newDiv.id = "add_mood_error_message";
+            const errorPlace = document.getElementById("mood_trigger_textarea");
+            errorPlace.insertAdjacentElement("afterend", newDiv);
+          }
+          const oldDiv = document.getElementById("add_mood_error_message");
+          const newDiv = document.createElement("div");
+          newDiv.id = "add_mood_error_message";
+          newDiv.textContent = error.response.data.message;
+          newDiv.classList.add("d-flex");
+          newDiv.classList.add("justify-content-center");
+          newDiv.classList.add("text-danger");
+          oldDiv.replaceWith(newDiv);
+          setTimeout(function () {
+            newDiv.remove();
+          }, 10000);
+        }
+      }
     </script>
   </body>
 </html>

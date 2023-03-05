@@ -1,7 +1,7 @@
 const logout_button = document.getElementById("logout_button");
 logout_button.addEventListener("click", function () {
   console.log("logging out now...");
-  debugger;
+
   axios
     .post("http://localhost:3000/api/logout", {
       sessionToken: sessionStorage.getItem("sessionToken"),

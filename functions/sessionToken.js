@@ -1,6 +1,6 @@
 // import axios from "axios";
 
-function validateSessionToken() {
+async function validateSessionToken() {
   const sessionToken = sessionStorage.getItem("sessionToken");
   const userId = sessionStorage.getItem("userId");
   if ((!sessionToken && !userId) || !userId || !sessionToken) {
@@ -8,19 +8,26 @@ function validateSessionToken() {
     window.location.href = "./login.html";
     return false;
   }
-  axios
-    .get("http://localhost:3000/api/checkSessionToken", {
-      params: { sessionToken: sessionToken, userId: userId },
-    })
-    .then((response) => {
-      //session token valid
-      // do nothing and stay at site
-      return true;
-      //   window.location.href = "./" + goToSite;
-    })
-    .catch((error) => {
+  let answer = null;
+  try {
+    const result = await axios.get(
+      "http://localhost:3000/api/checkSessionToken",
+      {
+        params: { sessionToken: sessionToken, userId: userId },
+      }
+    );
+    console.log(result.data);
+    if (result.data.success) {
+      answer = true;
+    } else {
+      answer = false;
       //session token not valid
       window.location.href = "./login.html";
-      return false;
-    });
+    }
+  } catch (error) {
+    console.log(error);
+    //session token not valid
+    window.location.href = "./login.html";
+  }
+  return answer;
 }
