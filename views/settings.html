@@ -53,66 +53,79 @@
           >
             <div class="container mb-3 custom_modal_form_wrapper">
               <div
-                class="d-flex mb-3 custom_modal_headline2_wrapper"
+                class="d-flex mt-3 mb-3 custom_modal_headline2_wrapper"
                 id="signup_headline2"
               ></div>
               <div class="custom_modal_input_wrapper">
                 <table class="table table-hover align-middle">
                   <tbody>
                     <tr>
-                      <td>Username:</td>
-                      <td>
-                        <input
-                          class="form-control"
-                          id="input_settings_username"
-                          value="loaded username"
-                          type="text"
-                          disabled
-                        />
-                      </td>
-                      <td>
-                        <button
-                          class="btn btn-light"
-                          id="button_settings_username"
-                          value="input_settings_username"
-                          type="button"
-                        >
-                          Edit now
-                        </button>
-                      </td>
+                      <form
+                        id="form_settings_username"
+                        class="needs-validation"
+                        novalidate
+                      >
+                        <td>Username:</td>
+                        <td>
+                          <input
+                            class="form-control"
+                            id="input_settings_username"
+                            value="loaded username"
+                            type="text"
+                            name="username"
+                            disabled
+                          />
+                        </td>
+                        <td>
+                          <button
+                            class="btn btn-light"
+                            id="button_settings_edit_username"
+                            value="input_settings_username"
+                            type="button"
+                          >
+                            Edit now
+                          </button>
+                        </td>
+                      </form>
                     </tr>
                     <tr>
-                      <td>Password:</td>
-                      <td>
-                        <input
-                          class="form-control"
-                          id="input_settings_password"
-                          value="loaded password"
-                          type="password"
-                          disabled
-                        />
-                      </td>
-                      <td>
-                        <button
-                          class="btn btn-light"
-                          id="button_settings_password"
-                          value="input_settings_password"
-                          type="button"
-                        >
-                          Edit now
-                        </button>
-                      </td>
+                      <form
+                        id="form_settings_password"
+                        class="needs-validation"
+                        novalidate
+                      >
+                        <td>Password:</td>
+                        <td>
+                          <input
+                            class="form-control"
+                            id="input_settings_password"
+                            value="password"
+                            type="password"
+                            name="password"
+                            disabled
+                          />
+                        </td>
+                        <td>
+                          <button
+                            class="btn btn-light"
+                            id="button_settings_edit_password"
+                            value="input_settings_password"
+                            type="button"
+                          >
+                            Change now
+                          </button>
+                        </td>
+                      </form>
                     </tr>
                     <tr>
                       <td>Delete all entries:</td>
                       <td>
-                        <span id="output_settings_entries_count"></span> entries
-                        stored
+                        <span id="output_settings_entries_count"></span>
                       </td>
                       <td>
                         <button
                           class="btn btn-light"
-                          id="button_settings_entries_count"
+                          id="button_settings_delete_entries"
                           type="button"
                           value="output_settings_entries_count"
                         >
@@ -145,13 +158,46 @@
     </div>
     <script src="../functions/sessionToken.js"></script>
     <script>
-      window.onload = function () {
-        const valid = validateSessionToken();
-        console.log(valid);
+      window.onload = async function () {
+        const valid = await validateSessionToken();
+        // console.log("session validation: " + valid);
+        //TODO -  call getUser onLoad() and set as value of inputs
+        const user_data = await getUserData();
+        console.log(user_data.data);
+        //set loaded user values
+        const input_username = document.getElementById(
+          "input_settings_username"
+        );
+        input_username.value = user_data.data.username;
+        const output_entries = document.getElementById(
+          "output_settings_entries_count"
+        );
+        let entry_text = "entries";
+        if (user_data.data.entryCount === 1) {
+          entry_text = "entry";
+        }
+        output_entries.textContent =
+          user_data.data.entryCount + " " + entry_text + " stored";
+        // debugger;
       };
-    </script>
-    <script>
-      // on Site load get Username, password, entry count
+      async function getUserData() {
+        let result = null;
+        try {
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          result = await axios.get("http://localhost:3000/api/user/get", {
+            headers: {
+              Authorization: sessionToken,
+              "X-User-Id": userId,
+            },
+          });
+          // console.log("result: " + result);
+          // console.log(result);
+        } catch (error) {
+          console.log(error);
+        }
+        return result.data;
+      }
     </script>
     <script>
       var title = "Manage your account settings";
@@ -162,13 +208,13 @@
       document.getElementById("signup_headline2").innerHTML = headline2;
 
       document
-        .getElementById("button_settings_password")
+        .getElementById("button_settings_edit_password")
         .addEventListener("click", settingUsernamePasswordFunc);
       document
-        .getElementById("button_settings_username")
+        .getElementById("button_settings_edit_username")
         .addEventListener("click", settingUsernamePasswordFunc);
       document
-        .getElementById("button_settings_entries_count")
+        .getElementById("button_settings_delete_entries")
         .addEventListener("click", deleteEntries);
       document
         .getElementById("button_settings_delete_account")
@@ -194,28 +240,35 @@
         var input_x = document.getElementById(elem.target.value);
         //button which is clicked
         var button_x = elem.target;
+        debugger;
 
         // console.log("input value: " + input_x.value);
         if (input_x.disabled === true) {
+          button_x.innerHTML = "Save now";
           if (input_x.id.includes("password")) {
             // console.log("includes password");
             input_x.type = "text";
+            input_x.value = "";
+            input_x.placeholder = "new password";
           }
-          button_x.innerHTML = "Save now";
           console.log("changed to enabled");
           input_x.disabled = false;
         } else {
           //TODO - backend call update here for change of username/password
+          button_x.innerHTML = "Edit now";
           if (input_x.id.includes("password")) {
             // console.log("includes password");
             input_x.type = "password";
+            button_x.innerHTML = "Change now";
           }
-          button_x.innerHTML = "Edit now";
           // console.log("input val to be: " + input_x.value);
           console.log("changed to disabled");
           input_x.disabled = true;
         }
       }
+    </script>
+    <script>
+      // on Site load get Username, password, entry count
     </script>
   </body>
 </html>

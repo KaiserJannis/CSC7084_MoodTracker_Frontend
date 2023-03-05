@@ -3,8 +3,9 @@
 }
 .custom_modal_wrapper {
   width: 55%;
-  height: 90%;
-  background-color: #0d6efd;
+  height: fit-content;
+  max-height: 90%;
+  background-color: #72aaff;
 }
 .custom_modal_form_wrapper,
 .signup_form_wrapper,
