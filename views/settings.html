@@ -325,9 +325,35 @@
         // output_x.innerHTML=entries_count
       }
       async function deleteAccount(elem) {
-        var output_x = document.getElementById(elem.target.value);
+        var output_x = document.getElementById(elem.target.id);
         console.log(output_x);
         console.log("delete account now");
+        try {
+          // debugger;
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          if (sessionToken && userId) {
+            const result = await axios.delete(
+              "http://localhost:3000/api/user/delete",
+              {
+                headers: {
+                  Authorization: sessionToken,
+                  "X-User-Id": userId,
+                },
+              }
+            );
+            console.log(result.data.message);
+            // debugger;
+            if (result.data.success) {
+              debugger;
+              const valid = await validateSessionToken();
+              return result.data.message;
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        return false;
         //TODO - backend call delete account here
         //TODO - delete successfull change background color green
       }
@@ -464,7 +490,10 @@
           .addEventListener("click", deleteEntries);
         document
           .getElementById("button_settings_delete_account")
-          .addEventListener("click", deleteAccount);
+          .addEventListener("click", async function (event) {
+            const result = await deleteAccount(event);
+            console.log(result);
+          });
         const cancel_username = document.getElementById(
           "button_settings_cancel_username"
         );
