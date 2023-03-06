@@ -83,12 +83,11 @@
         const raw_data = await getUserData();
         const chart_data = await createChartData(raw_data);
         const entry_data = await getEntryData(raw_data);
-        console.log("chart_data returned:");
-        console.log(chart_data);
-        console.log("entry_data returned:");
-        console.log(entry_data);
+        // console.log("chart_data returned:");
+        // console.log(chart_data);
+        // console.log("entry_data returned:");
+        // console.log(entry_data);
         // const
-
         await dashboard_chart(
           chart_data,
           "active_pleasant_chart",
@@ -98,6 +97,53 @@
       };
     </script>
     <script>
+      async function deleteMood(moodId) {
+        console.log("delete mood start:");
+        try {
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          const result = await axios.delete(
+            "http://localhost:3000/api/mood/delete/single",
+            {
+              headers: {
+                Authorization: sessionToken,
+                "X-User-Id": userId,
+              },
+              data: { moodId: moodId },
+            }
+          );
+          console.log(result.data.message);
+          return result.data.success;
+        } catch (error) {
+          console.log(error);
+          return false;
+        }
+      }
+      async function editMoodTrigger(moodId, trigger) {
+        // debugger;
+        // console.log("modd id: " + moodId);
+        // console.log("trigger input: " + trigger);
+        console.log("edit mood trigger start:");
+        try {
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          const result = await axios.patch(
+            "http://localhost:3000/api/mood/update",
+            { moodId: moodId, trigger: trigger },
+            {
+              headers: {
+                Authorization: sessionToken,
+                "X-User-Id": userId,
+              },
+            }
+          );
+          console.log(result.data.message);
+          return result.data.success;
+        } catch (error) {
+          console.log(error);
+          return false;
+        }
+      }
       async function dashboard_chart(
         chart_data,
         canvas_chart_id,
@@ -254,7 +300,8 @@
             childElem.id = `dashboard_log_${mood}`;
             childElem.classList.add("custom_dashboard_mood_logs");
             mood_logs_container.innerHTML += `<div
-                    class="dashboard_mood_log_entry_loop_container container w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
+                    class="dashboard_mood_log_entry_loop_container container pt-2 pb-2 w-100 mb-2 d-flex justify-content-between align-items-center bg-primary rounded-3"
+                    id='dashboard_mood_log_entry_loop_container_${id}'
                     style="height: 50px"
                   >
                     <span class="d-flex w-100 justify-content-center"
@@ -328,9 +375,9 @@
           });
         });
       }
-      function dashboardButtonsFunc(elem, mood_data) {
+      async function dashboardButtonsFunc(elem, mood_data) {
         const row_id = elem.value;
-        mood_data = myData; //object with actual data from backend
+
         console.log("button clicked id: " + elem.id);
         //value contains the mood log id
         if (elem.id.includes("edit")) {
@@ -376,7 +423,12 @@
             cancel_button.id = "dashboard_delete_button_" + row_id;
             cancel_button.innerHTML = "Delete";
             //TODO - backend call save mood trigger update here
-            var backend_successfull = true;
+            //moodId=row_id
+            const backend_successfull = await editMoodTrigger(
+              row_id,
+              input_field.value
+            );
+            // debugger;
             if (backend_successfull) {
               console.log(
                 "Row id: " +
@@ -399,37 +451,52 @@
           //delete mood log entry
           var delete_button = elem;
           //TODO - backend call delete mood log entry here
-          const backend_successfull = delete mood_data[row_id];
+          const backend_successfull = await deleteMood(row_id);
           // let backend_successfull = true;
+          // debugger;
           if (backend_successfull) {
             console.log("Row id: " + row_id + ", delete entry was successful");
-            location.reload;
+            let removeChild = await document.getElementById(
+              "dashboard_mood_log_entry_loop_container_" + row_id
+            );
+            await removeChild.parentNode.removeChild(removeChild);
+
+            // debugger;
           } else {
             console.log(
               "delete entry backend call " + row_id + " something went wrong"
             );
           }
-          render_mood_log_entries(mood_data);
           console.log("delete button clicked end");
         } else if (elem.id.includes("cancel")) {
           console.log("cancel button clicked start");
           //nothing changed
+          // debugger;
           //get connected input field and edit button
           var cancel_button = elem;
           var save_button = document.getElementById(
             "dashboard_save_button_" + row_id
           );
-          input_field = document.getElementById(
-            "dashboard_input_trigger_" + row_id
-          );
+          // input_field = document.getElementById(
+          //   "dashboard_input_trigger_" + row_id
+          // );
           if (input_field.disabled === false) {
             input_field.disabled = true;
             save_button.innerHTML = "Edit";
             save_button.id = "dashboard_edit_button_" + row_id;
             cancel_button.id = "dashboard_delete_button_" + row_id;
             cancel_button.innerHTML = "Delete";
-            if (mood_data[row_id] != undefined) {
-              input_field.value = mood_data[row_id]["trigger"];
+            // debugger;
+            let foundTrigger = null;
+            await mood_data.forEach((obj) => {
+              console.log(obj);
+              if (obj.id == row_id) {
+                console.log("found");
+                foundTrigger = obj.trigger;
+              }
+            });
+            if (foundTrigger != null) {
+              input_field.value = foundTrigger;
             } else {
               console.log(
                 "mood log with id: " + row_id + " is already deleted"

@@ -16,7 +16,7 @@ async function validateSessionToken() {
         params: { sessionToken: sessionToken, userId: userId },
       }
     );
-    console.log(result.data);
+    console.log(result.data.message);
     if (result.data.success) {
       answer = true;
     } else {
