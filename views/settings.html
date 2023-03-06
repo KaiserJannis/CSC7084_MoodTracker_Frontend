@@ -317,16 +317,36 @@
         return false;
       }
       async function deleteEntries(elem) {
-        var output_x = document.getElementById(elem.target.value);
-        console.log(output_x);
         console.log("delete all entries now");
-        //TODO - call delete entries backend call here
-        //TODO - entries_count = call load number of entries here for validation
-        // output_x.innerHTML=entries_count
+        try {
+          // debugger;
+          const sessionToken = await sessionStorage.getItem("sessionToken");
+          const userId = await sessionStorage.getItem("userId");
+          if (sessionToken && userId) {
+            const result = await axios.delete(
+              "http://localhost:3000/api/mood/delete/all",
+              {
+                headers: {
+                  Authorization: sessionToken,
+                  "X-User-Id": userId,
+                },
+              }
+            );
+            console.log(result.data.message);
+            // debugger;
+            if (result.data.success) {
+              // debugger;
+              user_actual = await getUserData();
+              await setInitialValues(user_actual);
+              return result.data.message;
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        return false;
       }
       async function deleteAccount(elem) {
-        var output_x = document.getElementById(elem.target.id);
-        console.log(output_x);
         console.log("delete account now");
         try {
           // debugger;
