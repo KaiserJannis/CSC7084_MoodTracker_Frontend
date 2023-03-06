@@ -20,7 +20,8 @@
       integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
       crossorigin="anonymous"
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <!-- <link href="./stylesheet.css" rel="stylesheet" ></link> -->
@@ -67,22 +68,41 @@
         </div>
       </div>
     </div>
-    <script src="data.js"></script>
-    <script src="data_chart.js"></script>
+    <!-- <script src="data.js"></script> -->
+    <!-- <script src="data_chart.js"></script> -->
     <script src="../functions/sessionToken.js"></script>
+    <script src="../functions/data.js"></script>
     <script>
-      window.onload = function () {
-        const valid = validateSessionToken();
-        console.log(valid);
+      var user_actual = null;
+      window.onload = async function () {
+        const valid = await validateSessionToken();
+        // console.log(valid);
+        user_actual = await getUser();
+        console.log(user_actual.data);
+        // debugger;
+        const raw_data = await getUserData();
+        const chart_data = await createChartData(raw_data);
+        const entry_data = await getEntryData(raw_data);
+        console.log("chart_data returned:");
+        console.log(chart_data);
+        console.log("entry_data returned:");
+        console.log(entry_data);
+        // const
+
+        await dashboard_chart(
+          chart_data,
+          "active_pleasant_chart",
+          "How did I feel the last times"
+        );
+        await render_mood_log_entries(entry_data);
       };
     </script>
     <script>
-      dashboard_chart(
-        random_test_data,
-        "active_pleasant_chart",
-        "How did I feel the last times"
-      );
-      function dashboard_chart(chart_data, canvas_chart_id, headline_text) {
+      async function dashboard_chart(
+        chart_data,
+        canvas_chart_id,
+        headline_text
+      ) {
         if (!chart_data) {
           console.log("no chart data defined");
         }
@@ -148,9 +168,16 @@
             ],
             yAxes: [
               {
+                display: true,
                 ticks: {
                   beginAtZero: true,
+                  steps: 10,
+                  stepValue: 1,
                   max: 10,
+                  // suggestedMin: 0,
+                  // suggestedMax: 10,
+                  // max: 10,
+                  // min: 0,
                 },
                 scaleLabel: {
                   display: true,
@@ -200,8 +227,8 @@
     <script>
       //TODO - crosssite scription and mysql injection
       //TODO - get database data callback here
-      render_mood_log_entries(myData); //only here name of data object
-      function render_mood_log_entries(mood_data) {
+      //only here name of data object
+      async function render_mood_log_entries(mood_data) {
         if (mood_data === undefined) {
           console.log("mood data is undefined. Looks like this:");
           console.log(mood_data);
@@ -372,7 +399,7 @@
           //delete mood log entry
           var delete_button = elem;
           //TODO - backend call delete mood log entry here
-          let backend_successfull = delete mood_data[row_id];
+          const backend_successfull = delete mood_data[row_id];
           // let backend_successfull = true;
           if (backend_successfull) {
             console.log("Row id: " + row_id + ", delete entry was successful");

@@ -173,6 +173,7 @@
       </div>
     </div>
     <script src="../functions/sessionToken.js"></script>
+    <script src="../functions/data.js"></script>
     <script>
       var title = "Manage your account settings";
       var headline2 = "What do you want to change?";
@@ -185,7 +186,7 @@
         const valid = await validateSessionToken();
         // console.log("session validation: " + valid);
         //TODO -  call getUser onLoad() and set as value of inputs
-        user_actual = await getUserData();
+        user_actual = await getUser();
         console.log(user_actual.data);
         await setInitialValues(user_actual);
       };
@@ -263,25 +264,7 @@
       }
 
       setEventListener();
-      async function getUserData() {
-        let result = null;
-        try {
-          const sessionToken = await sessionStorage.getItem("sessionToken");
-          const userId = await sessionStorage.getItem("userId");
-          result = await axios.get("http://localhost:3000/api/user/get", {
-            headers: {
-              Authorization: sessionToken,
-              "X-User-Id": userId,
-            },
-          });
-          // console.log("result: " + result);
-          // console.log(result);
-          return result.data;
-        } catch (error) {
-          console.log(error);
-          return false;
-        }
-      }
+
       async function updateUserData(data) {
         try {
           // debugger;

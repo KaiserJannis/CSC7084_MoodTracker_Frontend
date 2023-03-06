@@ -1,6 +1,6 @@
 // Generate 5 days of data
 let random_test_data = [];
-for (let i = 0; i < 23; i++) {
+for (let i = 0; i < 5; i++) {
   let date = new Date();
   date.setDate(date.getDate() + i);
   let dayDataPoints = [];
