@@ -204,9 +204,9 @@
               // newDiv.classList.add("justify-content-center");
               newDiv.classList.add("text-danger");
               failMessage.insertAdjacentElement("afterend", newDiv);
-              setTimeout(function () {
-                newDiv.remove();
-              }, 10000);
+              // setTimeout(function () {
+              //   newDiv.remove();
+              // }, 10000);
             } else {
               const newDiv = document.getElementById("login_error_message");
               newDiv.innerHTML = error.response.data.message;
@@ -214,9 +214,9 @@
               if (newDiv.classList.contains("text-success")) {
                 newDiv.classList.remove("text-success");
               }
-              setTimeout(function () {
-                newDiv.remove();
-              }, 10000);
+              // setTimeout(function () {
+              //   newDiv.remove();
+              // }, 10000);
             }
           });
       }

@@ -59,7 +59,11 @@
             class="custom_chartjs_wrapper w-100 d-flex flex-column align-items-center p-0 m-0"
             style="height: 250px"
           >
-            <canvas id="active_pleasant_chart"></canvas>
+            <canvas
+              id="active_pleasant_chart"
+              class="w-100"
+              style="height: 500px"
+            ></canvas>
           </div>
           <div
             id="custom_log_entry_container"
@@ -88,12 +92,13 @@
         // console.log("entry_data returned:");
         // console.log(entry_data);
         // const
-        await dashboard_chart(
+        const canvas_mood_chart = await dashboard_chart(
           chart_data,
           "active_pleasant_chart",
           "How did I feel the last times"
         );
-        await render_mood_log_entries(entry_data);
+        // console.log(canvas_mood_chart);
+        const entryObj = await render_mood_log_entries(entry_data);
       };
     </script>
     <script>
@@ -152,6 +157,26 @@
         if (!chart_data) {
           console.log("no chart data defined");
         }
+        if (!canvas_chart_id) {
+          console.log("no chart canvas id defined");
+        }
+        const oldCanvas = await document.querySelector(
+          "canvas#" + canvas_chart_id
+        );
+        if (oldCanvas) {
+          console.log("canvas already exists");
+          let chart = Chart.getChart(oldCanvas);
+          if (chart) {
+            chart.destroy();
+          }
+        }
+        const h1 = await document.querySelector(
+          "h1#dashboard_chart_headline_h1"
+        );
+        if (h1) {
+          console.log("headline already exists");
+          h1.remove();
+        }
 
         let dates = [];
         let active_values = [];
@@ -196,7 +221,7 @@
         };
 
         let options = {
-          respnsive: true,
+          responsive: true,
           maintainAspectRatio: false,
           scale: {
             xAxes: [
@@ -209,6 +234,11 @@
                 scaleLabel: {
                   display: true,
                   labelString: "Date",
+                },
+                ticks: {
+                  angle: 90,
+                  // maxRotation: 90,
+                  // minRotation: 90,
                 },
               },
             ],
@@ -240,14 +270,22 @@
           options: options,
         });
         //add hover style to head
-        add_hover_style();
+        await add_hover_style();
+        //add a headline above the chartjs (added to the parent of the parent of the canvas)
+        await add_headline_before_chart(canvas_chart_id, headline_text);
+
+        const canvas = await document.querySelector(
+          "canvas#active_pleasant_chart"
+        );
+        // console.log(canvas);
+        return canvas;
+        debugger;
+
         function add_hover_style() {
           var style = document.createElement("style");
           style.innerHTML = "canvas:hover{cursor:pointer}";
           document.head.appendChild(style);
         }
-        //add a headline above the chartjs (added to the parent of the parent of the canvas)
-        add_headline_before_chart(canvas_chart_id, headline_text);
         function add_headline_before_chart(canvas_chart_id, headline_text) {
           var chart_div = document.querySelector(
             "#" + canvas_chart_id
@@ -255,7 +293,7 @@
           var container_parent = chart_div.parentNode;
           var new_headline = document.createElement("h1");
           new_headline.textContent = headline_text;
-
+          new_headline.id = "dashboard_chart_headline_h1";
           // console.log(chart_div);
           // console.log(container_parent);
           container_parent.insertBefore(new_headline, chart_div);
@@ -460,7 +498,39 @@
               "dashboard_mood_log_entry_loop_container_" + row_id
             );
             await removeChild.parentNode.removeChild(removeChild);
+            //TODO - reload chart graph here
+            // const oldCanvas = await document.querySelector(
+            //   "canvas#active_pleasant_chart"
+            // );
+            // debugger;
+            // console.log(canvas_mood_chart);
+            const h1 = await document.querySelector(
+              "h1#dashboard_chart_headline_h1"
+            );
+            const oldCanvas = await document.querySelector(
+              "canvas#active_pleasant_chart"
+            );
+            // console.log(h1);
+            // console.log(oldCanvas);
+            if (h1 && oldCanvas) {
+              const newRawData = await getUserData();
+              const newChartData = await createChartData(newRawData);
 
+              canvas_mood_chart = await dashboard_chart(
+                newChartData,
+                oldCanvas.id,
+                h1.innerText
+              );
+              console.log("chart update successful");
+              // debugger;
+            } else {
+              console.log("chart not updated");
+            }
+
+            // console.log(oldCanvas);
+            // console.log(h1);
+            // debugger;
+            // await dashboard_chart();
             // debugger;
           } else {
             console.log(
