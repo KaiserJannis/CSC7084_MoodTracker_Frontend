@@ -1,3 +1,55 @@
+@import url("./color.css");
+
+/* colours */
+.custom_button_text {
+  /* login button on login site */
+  background-color: var(--background-button-login) !important;
+}
+.custom_button_text:hover {
+  background-color: var(--background-button-login-hover) !important;
+}
+#header_nav {
+  background-color: var(--background-header) !important;
+}
+.custom_nav_button .nav-item .nav-link:hover {
+  /* --bs-nav-link-hover-color: blue; */
+  background-color: var(--background-header-button-hover) !important;
+}
+.custom_nav_button .nav-item .nav-link.active {
+  /* background-color: var(--background-header-button); */
+  --bs-nav-pills-link-active-bg: var(
+    --background-header-button-active
+  ) !important;
+
+  /* --bs-nav-pills-link-hover-bg: var(--background-header-button-hover); */
+}
+.custom_button_modal {
+  background-color: var(--background-button) !important;
+}
+.custom_button_modal:hover {
+  background-color: var(--background-button-hover) !important;
+}
+.login_site_wrapper {
+  background-color: var(--background-login-site) !important;
+}
+.login_container_wrapper {
+  background-color: var(--background-login-container) !important;
+}
+
+.login_headline_wrapper {
+  color: var(--color-login-headline) !important;
+}
+.custom_site_wrapper {
+  padding-top: 56px !important;
+  background-color: var(--background-add-site) !important;
+}
+.custom_modal_wrapper {
+  background-color: var(--background-add-container) !important;
+}
+.custom_modal_headline_wrapper {
+  color: var(--color-add-headline) !important;
+}
+/* styling */
 .login_container_wrapper,
 .signup_container_wrapper,
 .custom_modal_wrapper {
@@ -5,16 +57,6 @@
   height: fit-content;
   max-height: 90%;
 }
-.signup_form_wrapper,
-.login_form_wrapper {
-  width: 50%;
-  min-width: 230px;
-  max-width: 300px;
-}
-/* .signup_input,
-.login_input {
-  min-width: ;
-} */
 
 @media only screen and (max-width: 800px) {
   .login_container_wrapper,
@@ -40,6 +82,19 @@
   } */
 }
 
+.custom_modal_form_wrapper {
+  width: 80%; /* 80% */
+  min-width: 230px;
+  /* max-width: 300px; */
+}
+.signup_form_wrapper,
+.login_form_wrapper {
+  width: 50% !important;
+  max-width: 300px;
+  min-width: 230px;
+}
+
+.custom_modal_headline_wrapper,
 .login_headline_wrapper,
 .signup_headline_wrapper {
   margin-top: 10%;
@@ -50,6 +105,7 @@
   font-size: 30px;
   line-height: 45px;
 }
+.custom_modal_headline2_wrapper,
 .login_headline2_wrapper,
 .signup_headline2_wrapper {
   /* width: 264px; */
@@ -81,10 +137,42 @@
 
   text-decoration-line: underline;
 }
+.custom_button_modal,
 .custom_button_text {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 600;
   font-size: 25px;
   text-align: center;
+}
+.custom_modal_input_label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}
+.font_normal_custom_modal {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}
+.dashboard_fonts_log_label {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+}
+.dashboard_fonts_log_value {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+#custom_log_entry_container > div:last-child {
+  margin-bottom: 20px;
 }

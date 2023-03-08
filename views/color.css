@@ -1,0 +1,32 @@
+:root {
+  /* colours */
+  --baby-powder: #ffcae1;
+  --school-bus-yellow: #fdd909;
+  --yellow: #f9f70c;
+  --periwinkle: #bcb0fd;
+  --mint: #6ec3a6;
+  --black: #000000;
+
+  /* variables */
+  --background-login-site: var(--school-bus-yellow);
+  --background-login-container: var(--periwinkle);
+  --color-login-headline: var(--black);
+  /* add mood site */
+  --background-add-site: var(--mint);
+  --background-add-container: var(--school-bus-yellow);
+  --color-add-headline: #000000;
+  /* header */
+  --background-header: var(--baby-powder);
+  --background-header-button-active: var(--periwinkle);
+  --background-header-button-hover: var(--school-bus-yellow);
+  /* buttons in general */
+  --background-button-login: var(--school-bus-yellow);
+  --background-button-login-hover: var(--baby-powder);
+  --background-button: var(--periwinkle);
+  --background-button-hover: var(--baby-powder);
+
+  /* override bottstrap variables */
+  /* --bs-nav-pills-link-active-bg: var(
+    --background-header-button-active
+  ) !important; */
+}
