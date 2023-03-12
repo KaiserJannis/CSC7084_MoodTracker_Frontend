@@ -59,6 +59,7 @@
                   name="username"
                   required
                 />
+                <div class="invalid-feedback"></div>
               </div>
               <div class="mb-3 signup_password_wrapper">
                 <label for="signup_password_input" class="form-label"
@@ -82,6 +83,7 @@
                       Icon
                     </button>
                   </span>
+                  <div class="invalid-feedback"></div>
                 </div>
               </div>
               <div class="mb-3 signup_email_wrapper">
@@ -96,6 +98,7 @@
                   name="email"
                   required
                 />
+                <div class="invalid-feedback"></div>
               </div>
               <div
                 class="d-flex p-0 mt-5 justify-content-center signup_submit_wrapper"
@@ -167,33 +170,135 @@
         // "use strict";
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.querySelectorAll(".needs-validation");
+
+        const usernameInput = document.getElementById("signup_username_input");
+        const passwordInput = document.getElementById("signup_password_input");
+        const emailInput = document.getElementById("signup_email_input");
+        let usernameValidated = false;
+        let passwordValidated = false;
+        let emailValidated = false;
+        // debugger;
+        usernameInput.addEventListener("input", async function () {
+          const usernameValidate = await validateUsername(
+            usernameInput.value,
+            usernameInput
+          );
+          const valid = await setErrorMessages(usernameValidate, usernameInput);
+          console.log(valid);
+          usernameValidated = valid;
+          usernameInput.form.classList.add("was-validated");
+        });
+        passwordInput.addEventListener("input", async function () {
+          const passwordValidate = await validatePassword(
+            passwordInput.value,
+            passwordInput
+          );
+          const valid = await setErrorMessages(passwordValidate, passwordInput);
+          console.log(valid);
+          passwordValidated = valid;
+          passwordInput.form.classList.add("was-validated");
+        });
+        emailInput.addEventListener("input", async function () {
+          const emailValidate = await validateEmail(
+            emailInput.value,
+            emailInput
+          );
+          const valid = await setErrorMessages(emailValidate, emailInput);
+          console.log(valid);
+          emailValidated = valid;
+          emailInput.form.classList.add("was-validated");
+        });
         // Loop over them and prevent submission
         Array.prototype.slice.call(forms).forEach(function (form) {
           form.addEventListener("submit", async function (event) {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-              form.classList.add("was-validated");
-            } else {
+            event.preventDefault(); //prevent from emediatly submitting
+            event.stopPropagation();
+            const form_data = new FormData(form);
+            const dataOld = Object.fromEntries(form_data);
+            const data = {
+              username: dataOld.username,
+              password: dataOld.password,
+              email: dataOld.email,
+            };
+            // debugger;
+            if (
+              usernameValidated === true &&
+              passwordValidated === true &&
+              emailValidated === true
+            ) {
               //form submission here
-              const result = await submitForm(form, event);
-              console.log(result);
-              debugger;
+              await submitForm(data, form);
+              // debugger;
+            } else {
+              console.log("input data was not valid");
             }
-
-            // console.log(event);
+            form.classList.add("was-validated");
           });
-          // console.log(form.classList);
         });
       }
-      async function submitForm(form, event) {
+      async function validateUsername(input, field) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{5,20}$/;
+        //  ^: Start of the string.
+        // (?=.*[a-z]): Positive lookahead assertion for at least one lowercase letter.
+        // (?=.*[A-Z]): Positive lookahead assertion for at least one uppercase letter.
+        // (?=.*\d): Positive lookahead assertion for at least one number.
+        // (?=.*[^\w\s]): Positive lookahead assertion for at least one special character.
+        // .{8,20}: Match any character between 5 and 20 times.
+        // $: End of the string.
+        const message =
+          "Username has to be between 5 and 20 characters and contains at least one lowercase letter, one uppercase letter, one number, and one special character";
+        if (!regex.test(input)) {
+          field.setCustomValidity(message);
+          return false;
+        }
+        field.setCustomValidity("");
+        return true;
+      }
+      async function validatePassword(input, field) {
+        const regex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const message =
+          "Password has to be minimum 8 characters and contains at least one lowercase letter, one uppercase letter, one number, and one special character";
+
+        if (!regex.test(input)) {
+          field.setCustomValidity(message);
+          return false;
+        }
+        field.setCustomValidity("");
+        return true;
+      }
+      async function validateEmail(input, field) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const message = "Please enter a valid email address";
+
+        if (!regex.test(input)) {
+          field.setCustomValidity(message);
+          return false;
+        }
+        field.setCustomValidity("");
+        return true;
+      }
+
+      async function setErrorMessages(valueValidate, inputField) {
+        const error = inputField.parentNode.querySelector(".invalid-feedback");
+        if (valueValidate === false) {
+          //get the input error element
+          error.textContent = inputField.validationMessage;
+          inputField.classList.add("is-invalid");
+          return false;
+        } else {
+          error.textContent = "";
+          inputField.classList.remove("is-invalid");
+          return true;
+        }
+      }
+      async function submitForm(data, form) {
         // const form = document.getElementById("custom_signup_form");
         try {
-          event.preventDefault(); //prevent from emediatly submitting
-          const form_data = new FormData(form);
-          const data = Object.fromEntries(form_data);
-          //send now form data using POST
-          console.log(data);
+          if (!data) {
+            console.log("no data in form provided");
+          }
+          debugger;
           // let result = null;
           const result = axios
             .post("http://localhost:3000/api/user/add", {

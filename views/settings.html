@@ -186,10 +186,13 @@
         const valid = await validateSessionToken();
         // console.log("session validation: " + valid);
         //TODO -  call getUser onLoad() and set as value of inputs
+        await setData();
+      };
+      async function setData() {
         user_actual = await getUser();
         console.log(user_actual.data);
         await setInitialValues(user_actual);
-      };
+      }
       //set initial values
       async function setInitialValues(user_data, type) {
         if (arguments.length === 1) {
@@ -263,6 +266,31 @@
         // debugger;
       }
 
+      async function showResponseMessage(message, type) {
+        // const message = "Error message here";
+        const messageElem = document.createElement("div");
+        const aboveElem = document.getElementById("signup_headline2");
+        messageElem.textContent = message;
+        messageElem.id = "APIResponseElem";
+        messageElem.classList.add("d-flex");
+        if (type === true) {
+          messageElem.classList.add("text-success");
+          messageElem.classList.remove("text-danger");
+        } else if (type === false) {
+          messageElem.classList.add("text-danger");
+          messageElem.classList.remove("text-success");
+        }
+
+        const oldMessageElem = document.querySelector("#APIResponseElem");
+        if (oldMessageElem) {
+          oldMessageElem.replaceWith(messageElem);
+        } else {
+          aboveElem.insertAdjacentElement("afterend", messageElem);
+        }
+        setTimeout(function () {
+          messageElem.remove();
+        }, 7500);
+      }
       setEventListener();
 
       async function updateUserData(data) {
@@ -287,9 +315,10 @@
                 },
               }
             );
-            // debugger;
+            debugger;
             console.log(result.data.message);
             // debugger;
+            await showResponseMessage(result.data.message, result.data.success);
             if (result.data.success) {
               return result.data.message;
             }
@@ -317,10 +346,10 @@
             );
             console.log(result.data.message);
             // debugger;
+            await showResponseMessage(result.data.message, result.data.success);
             if (result.data.success) {
-              // debugger;
-              user_actual = await getUserData();
-              await setInitialValues(user_actual);
+              debugger;
+              await setData();
               return result.data.message;
             }
           }

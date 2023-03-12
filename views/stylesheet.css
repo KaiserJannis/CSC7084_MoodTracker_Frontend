@@ -35,7 +35,6 @@
 .login_container_wrapper {
   background-color: var(--background-login-container) !important;
 }
-
 .login_headline_wrapper {
   color: var(--color-login-headline) !important;
 }
