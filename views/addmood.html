@@ -21,6 +21,10 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css" />
+
     <link href="./stylesheet.css" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css?family=Poppins"
@@ -151,6 +155,21 @@
     </div>
     <script src="../functions/sessionToken.js"></script>
     <script>
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-right",
+        iconColor: "white",
+        customClass: {
+          popup: "colored-toast",
+        },
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      });
+      // Toast.fire({
+      //   title: "Success",
+      //   icon: "success",
+      // });
       window.onload = function () {
         const valid = validateSessionToken();
         console.log(valid);
@@ -238,9 +257,15 @@
               },
             }
           );
+          Toast.fire({
+            title: "Success",
+            icon: "success",
+          });
           console.log(result.data.message);
           form.reset();
-          window.location.href = "./dashboard.html";
+          setTimeout(() => {
+            window.location.href = "./dashboard.html";
+          }, 1200);
         } catch (error) {
           //save mood was not successful
           console.log(error.response.data.message);
@@ -258,6 +283,10 @@
           newDiv.classList.add("justify-content-center");
           newDiv.classList.add("text-danger");
           oldDiv.replaceWith(newDiv);
+          Toast.fire({
+            title: "Error",
+            icon: "error",
+          });
           setTimeout(function () {
             newDiv.remove();
           }, 10000);

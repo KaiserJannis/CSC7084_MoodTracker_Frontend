@@ -132,21 +132,8 @@
     <script src="../functions/passwordVisibility.js"></script>
 
     <script>
-      var title = "Create your Account";
-      var headline2 = "What are your credentials?";
-      var button = "Sign up";
-      var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
-      var icon_white = "<img src='../assets/low_vision_grey.svg'/> ";
-
-      document.getElementById("signup_title").innerHTML = title;
-      document.getElementById("signup_headline2").innerHTML = headline2;
-      document.getElementById("signup_button").innerHTML = button;
-      document.getElementById("password_visible_icon").innerHTML = icon_black;
-
-      document
-        .getElementById("password_visible_icon")
-        .addEventListener("click", () => password_visibility());
       window.onload = async function () {
+        await setValues();
         const form = document.querySelector(".needs-validation");
         const usernameInput = document.getElementById("signup_username_input");
         const passwordInput = document.getElementById("signup_password_input");
@@ -172,6 +159,22 @@
 
         await validationCheck(form, submitForm);
       };
+      async function setValues() {
+        var title = "Create your Account";
+        var headline2 = "What are your credentials?";
+        var button = "Sign up";
+        var icon_black = "<img src='../assets/low_vision_black.svg'/> ";
+        var icon_white = "<img src='../assets/low_vision_grey.svg'/> ";
+
+        document.getElementById("signup_title").innerHTML = title;
+        document.getElementById("signup_headline2").innerHTML = headline2;
+        document.getElementById("signup_button").innerHTML = button;
+        document.getElementById("password_visible_icon").innerHTML = icon_black;
+
+        document
+          .getElementById("password_visible_icon")
+          .addEventListener("click", () => password_visibility());
+      }
 
       async function submitForm(data, form) {
         // const form = document.getElementById("custom_signup_form");

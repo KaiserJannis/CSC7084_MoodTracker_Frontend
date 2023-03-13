@@ -21,8 +21,11 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css" />
 
     <!-- <link href="./stylesheet.css" rel="stylesheet" ></link> -->
     <link href="./stylesheet.css" rel="stylesheet" />
@@ -56,14 +59,10 @@
           id="custom_modal_wrapper_dashboard"
         >
           <div
-            class="custom_chartjs_wrapper w-100 d-flex flex-column align-items-center p-0 m-0"
-            style="height: 250px"
+            class="custom_chartjs_wrapper p-2 w-100 d-flex flex-column align-items-center p-0 m-0"
+            style="height: 350px"
           >
-            <canvas
-              id="active_pleasant_chart"
-              class="w-100"
-              style="height: 500px"
-            ></canvas>
+            <canvas id="active_pleasant_chart" class="w-100"></canvas>
           </div>
           <div
             id="custom_log_entry_container"
@@ -76,8 +75,24 @@
     <!-- <script src="data_chart.js"></script> -->
     <script src="../functions/sessionToken.js"></script>
     <script src="../functions/data.js"></script>
+
     <script>
       var user_actual = null;
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-right",
+        iconColor: "white",
+        customClass: {
+          popup: "colored-toast",
+        },
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      });
+      // Toast.fire({
+      //   title: "Success",
+      //   icon: "success",
+      // });
       window.onload = async function () {
         const valid = await validateSessionToken();
         // console.log(valid);
@@ -100,8 +115,7 @@
         // console.log(canvas_mood_chart);
         const entryObj = await render_mood_log_entries(entry_data);
       };
-    </script>
-    <script>
+
       async function deleteMood(moodId) {
         console.log("delete mood start:");
         try {
@@ -201,6 +215,16 @@
         let ctx = document
           .getElementById(canvas_chart_id.toString())
           .getContext("2d");
+        //create gradient
+        // var chart = Chart.getChart(ctx);
+        // console.log(chart);
+        // console.log(Math.round(Chart.getChart(ctx).chartArea.height));
+        var gradientActive = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientActive.addColorStop(0, "#fedcdc"); // light red
+        gradientActive.addColorStop(1, "#9a0000"); // dark red
+        var gradientPleasant = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientPleasant.addColorStop(0, "#b8b8ff"); // light red
+        gradientPleasant.addColorStop(1, "#0000a6"); // dark red
 
         let data = {
           labels: dates.flat(),
@@ -208,60 +232,20 @@
             {
               label: "Active",
               data: active_values.flat(),
-              borderColor: "yellow",
+              borderColor: gradientActive,
               fill: false,
+              backgroundColor: "#9a0000",
+              pointStyle: "circle",
             },
             {
               label: "Pleasant",
               data: pleasant_values.flat(),
-              borderColor: "blue",
+              borderColor: gradientPleasant,
               fill: false,
+              backgroundColor: "#0000a6",
+              pointStyle: "circle",
             },
           ],
-        };
-
-        let options = {
-          responsive: true,
-          maintainAspectRatio: false,
-          scale: {
-            xAxes: [
-              {
-                type: "time",
-                time: {
-                  parser: "DD.MM.YYYY HH:mm",
-                  tooltipFormat: "lll",
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: "Date",
-                },
-                ticks: {
-                  angle: 90,
-                  // maxRotation: 90,
-                  // minRotation: 90,
-                },
-              },
-            ],
-            yAxes: [
-              {
-                display: true,
-                ticks: {
-                  beginAtZero: true,
-                  steps: 10,
-                  stepValue: 1,
-                  max: 10,
-                  // suggestedMin: 0,
-                  // suggestedMax: 10,
-                  // max: 10,
-                  // min: 0,
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: "Value",
-                },
-              },
-            ],
-          },
         };
 
         // let options = {
@@ -269,11 +253,6 @@
         //   maintainAspectRatio: false,
         //   scales: {
         //     x: {
-        //       type: "time",
-        //       time: {
-        //         parser: "DD.MM.YYYY HH:mm",
-        //         tooltipFormat: "lll",
-        //       },
         //       scaleLabel: {
         //         display: true,
         //         labelString: "Date",
@@ -287,9 +266,9 @@
         //     y: {
         //       display: true,
         //       ticks: {
-        //         beginAtZero: true,
         //         stepSize: 1,
         //         max: 10,
+        //         min: 0,
         //         // suggestedMin: 0,
         //         // suggestedMax: 10,
         //         // max: 10,
@@ -303,12 +282,67 @@
         //   },
         // };
 
+        const options = {
+          color: "#000000",
+          defaultFontFamily: "Poppins",
+          defaultFontSize: 16,
+          defaultFontStyle: "bold",
+          maintainAspectRatio: false,
+          responsive: true,
+          scales: {
+            y: {
+              suggestedMin: -0.5,
+              suggestedMax: 10.1,
+            },
+            x: {
+              ticks: {
+                maxRotation: 90,
+                minRotation: 0,
+                autoSkip: false,
+                align: "center",
+              },
+            },
+          },
+          interaction: {
+            intersect: false,
+            mode: "nearest",
+            axis: "x",
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+              align: "end",
+              labels: {
+                usePointStyle: true,
+                fillStyle: "#000000",
+              },
+            },
+          },
+          elements: {
+            point: {
+              radius: 5,
+              hoverRadius: 8,
+              hitRadius: 3,
+              backgroundColor: "#5F9FFF",
+              pointStyle: "circle",
+            },
+          },
+        };
+
+        console.log(options);
+        console.log(data);
+        Chart.defaults.font.family = "Poppins";
+        Chart.defaults.font.size = 14;
+        Chart.defaults.color = "#000000";
         let chart = new Chart(ctx, {
           type: "line",
           data: data,
           options: options,
         });
         //add hover style to head
+        console.log(Math.round(Chart.getChart(ctx).chartArea.height));
+
         await add_hover_style();
         //add a headline above the chartjs (added to the parent of the parent of the canvas)
         await add_headline_before_chart(canvas_chart_id, headline_text);
@@ -317,8 +351,15 @@
           "canvas#active_pleasant_chart"
         );
         // console.log(canvas);
+        // window.addEventListener("resize", () => {
+        //   let canvas = document.getElementById(canvas_chart_id);
+        //   canvas.width = canvas.parentElement.clientWidth;
+        //   canvas.height = canvas.parentElement.clientHeight;
+        //   chart.resize();
+        //   chart.update();
+        // });
         return canvas;
-        debugger;
+        // debugger;
 
         function add_hover_style() {
           var style = document.createElement("style");
@@ -338,16 +379,8 @@
           container_parent.insertBefore(new_headline, chart_div);
         }
         //if size of parent container gets changed
-        window.addEventListener("resize", () => {
-          let canvas = document.getElementById(canvas_chart_id);
-          canvas.width = canvas.parentElement.clientWidth;
-          canvas.height = canvas.parentElement.clientHeight;
-          chart.resize();
-          chart.update();
-        });
       }
-    </script>
-    <script>
+
       //TODO - crosssite scription and mysql injection
       //TODO - get database data callback here
       //only here name of data object
@@ -407,7 +440,7 @@
                         <input
                           id='dashboard_input_trigger_${id}'
                           type="text"
-                          class="dashboard_fonts_log_value ms-1 ps-1 d-flex overflow-hidden form-control"
+                          class="dashboard_fonts_log_value_trigger ms-1 ps-1 d-flex overflow-hidden form-control"
                           style="width:100%"
                           value='${trigger}'
                           disabled
@@ -512,10 +545,18 @@
                   row_id +
                   ", Input is saved and changed to disabled, save->edit, cancel->delete"
               );
+              Toast.fire({
+                title: "Success",
+                icon: "success",
+              });
             } else {
               console.log(
                 "update backend call " + row_id + " something went wrong"
               );
+              Toast.fire({
+                title: "Error",
+                icon: "error",
+              });
             }
           } else {
             console.log(
@@ -561,9 +602,18 @@
                 h1.innerText
               );
               console.log("chart update successful");
+
+              Toast.fire({
+                title: "Success",
+                icon: "success",
+              });
               // debugger;
             } else {
               console.log("chart not updated");
+              Toast.fire({
+                title: "Error",
+                icon: "error",
+              });
             }
 
             // console.log(oldCanvas);

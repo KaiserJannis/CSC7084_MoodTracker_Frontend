@@ -2,10 +2,12 @@
   /* colours */
   --baby-powder: #ffcae1;
   --school-bus-yellow: #fdd909;
+  --light-yellow: #fff099;
   --yellow: #f9f70c;
   --periwinkle: #bcb0fd;
   --mint: #6ec3a6;
   --black: #000000;
+  --purple: #a13d63;
 
   /* variables */
   --background-login-site: var(--school-bus-yellow);
@@ -15,6 +17,11 @@
   --background-add-site: var(--mint);
   --background-add-container: var(--school-bus-yellow);
   --color-add-headline: #000000;
+  /* dashboard */
+  --background-dashboard-site: var(--mint);
+  --background-dashboard-graph: var(--light-yellow);
+  --background-dashboard-entry: var(--school-bus-yellow);
+  --background-dashboard-trigger: var(--baby-powder);
   /* header */
   --background-header: var(--baby-powder);
   --background-header-button-active: var(--periwinkle);
@@ -24,7 +31,7 @@
   --background-button-login-hover: var(--baby-powder);
   --background-button: var(--periwinkle);
   --background-button-hover: var(--baby-powder);
-  --background-button-slider: var(--mint);
+  --background-button-slider: var(--periwinkle);
 
   /* override bottstrap variables */
   /* --bs-nav-pills-link-active-bg: var(

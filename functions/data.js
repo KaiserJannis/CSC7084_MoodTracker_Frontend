@@ -67,7 +67,7 @@ async function createChartData(data_raw) {
       let moodObj = {};
       const active = mood.mood_active;
       const pleasant = mood.mood_pleasant;
-      const dateTime = await reformatDateTime(mood.mood_datetime);
+      const dateTime = await reformatDateTime(mood.mood_datetime, ".");
       const date = dateTime.date;
       const time = dateTime.time;
       moodObj.date = date;
