@@ -188,12 +188,13 @@
         //TODO -  call getUser onLoad() and set as value of inputs
         await setData();
       };
+
+      setEventListener();
       async function setData() {
         user_actual = await getUser();
         console.log(user_actual.data);
         await setInitialValues(user_actual);
       }
-      //set initial values
       async function setInitialValues(user_data, type) {
         if (arguments.length === 1) {
           //set loaded user values
@@ -226,7 +227,6 @@
           // debugger;
         }
       }
-      //add submit events to forms
       async function formSubmit(event) {
         // debugger;
         event.preventDefault();
@@ -265,7 +265,6 @@
         return false;
         // debugger;
       }
-
       async function showResponseMessage(message, type) {
         // const message = "Error message here";
         const messageElem = document.createElement("div");
@@ -287,12 +286,11 @@
         } else {
           aboveElem.insertAdjacentElement("afterend", messageElem);
         }
+        debugger;
         setTimeout(function () {
           messageElem.remove();
         }, 7500);
       }
-      setEventListener();
-
       async function updateUserData(data) {
         try {
           // debugger;
@@ -506,7 +504,6 @@
           }
         }
       }
-
       async function setEventListener() {
         document
           .getElementById("button_settings_edit_password")
