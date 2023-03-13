@@ -24,6 +24,7 @@
   --background-button-login-hover: var(--baby-powder);
   --background-button: var(--periwinkle);
   --background-button-hover: var(--baby-powder);
+  --background-button-slider: var(--mint);
 
   /* override bottstrap variables */
   /* --bs-nav-pills-link-active-bg: var(
